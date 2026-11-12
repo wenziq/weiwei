@@ -6,7 +6,7 @@
 
 Tauri 2 · React · FastAPI · SQLite · 本机数据优先
 
-![MIT License](https://img.shields.io/badge/License-MIT-2e9e7b)
+![GPL-3.0 License](https://img.shields.io/badge/License-GPL-3.0-2e9e7b)
 ![Tauri](https://img.shields.io/badge/Tauri-2-24c8d8)
 ![React](https://img.shields.io/badge/React-19-61dafb)
 ![FastAPI](https://img.shields.io/badge/FastAPI-Python-009688)
@@ -119,6 +119,6 @@ docs/images/                  # 实际产品截图
 
 ## 许可与免责声明
 
-项目使用 [MIT License](LICENSE)。第三方组件仍遵循各自许可；图表组件的来源与许可说明见 `apps/desktop/src-tauri/licenses/`。
+项目使用 [GPL-3.0 License](LICENSE)。第三方组件仍遵循各自许可；图表组件的来源与许可说明见 `apps/desktop/src-tauri/licenses/`。
 
 危微仅用于个人行情观察和研究，不构成任何投资建议、收益承诺或交易依据。投资有风险，数据与 AI 输出都需要独立核实。
