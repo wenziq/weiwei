@@ -1,0 +1,6 @@
+const account = [1, 1.01, .99, 1.02, 1.04, 1.03, 1.07, 1.09, 1.08, 1.1, 1.12, 1.1, 1.09, 1.13, 1.15, 1.14, 1.17, 1.16, 1.1842];
+const benchmark = [1, 1.01, 1, 1.02, 1.01, 1.03, 1.04, 1.03, 1.05, 1.04, 1.06, 1.05, 1.04, 1.06, 1.07, 1.06, 1.08, 1.07, 1.0926];
+function points(values: number[]) { const min = .96, max = 1.22; return values.map((value, index) => `${index ? 'L' : 'M'} ${index / (values.length - 1) * 700} ${190 - (value - min) / (max - min) * 170}`).join(' '); }
+export function PerformanceChart() {
+  return <div className="performance-chart"><svg viewBox="0 0 700 200" preserveAspectRatio="none"><path d={`${points(account)} L 700 200 L 0 200 Z`} fill="var(--accent-soft)" /><path d={points(benchmark)} fill="none" stroke="var(--blue)" strokeWidth="1.2" /><path d={points(account)} fill="none" stroke="var(--accent)" strokeWidth="1.8" /><text x="692" y="12" textAnchor="end" fill="var(--accent)" fontSize="10">1.1842</text><text x="0" y="198" fill="var(--faint)" fontSize="8">2025/11</text><text x="650" y="198" fill="var(--faint)" fontSize="8">2026/11</text></svg><div className="chart-legend"><span><i className="legend-line" />全部账户净值</span><span><i className="legend-line previous" />沪深 300</span></div></div>;
+}

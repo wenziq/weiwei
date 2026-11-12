@@ -1,0 +1,2 @@
+class NoMarketData(ValueError):
+    pass

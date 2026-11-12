@@ -1,0 +1,14 @@
+import { useMemo, useState } from 'react';
+import { Search, Star } from 'lucide-react';
+import type { IndexQuote } from '@weiwei/contracts';
+import { amount } from '@/lib/format';
+import { ChangeText } from '@/components/ui/ChangeText';
+import { Sparkline } from '@/components/ui/Sparkline';
+
+export function IndexDirectory({ indices, favorites, onToggleFavorite, onOpen }: { indices: IndexQuote[]; favorites: string[]; onToggleFavorite: (id: string) => void; onOpen: (index: IndexQuote) => void }) {
+  const [group, setGroup] = useState('全部');
+  const [query, setQuery] = useState('');
+  const groups = ['全部', ...new Set(indices.map(item => item.group))];
+  const filtered = useMemo(() => indices.filter(item => (group === '全部' || item.group === group) && `${item.name}${item.code}`.toLowerCase().includes(query.toLowerCase())), [indices, group, query]);
+  return <section className="panel index-directory"><div className="index-directory-head"><div className="index-directory-title"><h2>指数全景</h2><span>显示 {filtered.length} 个指数 · 点击一行查看 K 线</span></div><label className="inner-search index-filter-search"><Search size={12} /><input value={query} onChange={event => setQuery(event.target.value)} placeholder="搜索指数名称或代码" /></label></div><div className="index-group-tabs">{groups.map(name => <button key={name} className={group === name ? 'active' : ''} onClick={() => setGroup(name)}>{name}<span>{name === '全部' ? indices.length : indices.filter(item => item.group === name).length}</span></button>)}</div><div className="index-table-wrap"><table className="data-table index-directory-table"><thead><tr><th>指数</th><th>分组</th><th className="num">最新点位</th><th className="num">涨跌幅</th><th>当日走势</th><th className="num">成交额</th><th className="num">较昨日</th><th>报价说明</th></tr></thead><tbody>{filtered.map(item => <tr key={item.id} className="clickable" onClick={() => onOpen(item)}><td><div className="index-name"><button className={`favorite-button${favorites.includes(item.id) ? ' active' : ''}`} onClick={event => { event.stopPropagation(); onToggleFavorite(item.id); }} title={favorites.includes(item.id) ? '移出核心关注' : '加入核心关注'}><Star size={13} /></button><span><strong>{item.name}</strong><small>{item.code}</small></span></div></td><td><span className="group-label">{item.group}</span></td><td className="num strong">{item.point?.toLocaleString() ?? '—'}</td><td className="num"><ChangeText value={item.changePct} /></td><td><Sparkline values={item.spark} positive={(item.changePct ?? 0) >= 0} width={66} height={24} /></td><td className="num">{amount(item.amount)}</td><td className="num"><ChangeText value={item.deltaPct} /></td><td><span className="market-state" title={item.quoteTime ?? undefined}>{item.dataSource}{item.dataStatus === 'cached' ? ' · 缓存' : ''}</span></td></tr>)}</tbody></table></div></section>;
+}

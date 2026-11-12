@@ -1,0 +1,44 @@
+{
+  "watchlist": {
+    "tagsByInstrument": {}
+  },
+  "research": {
+    "documents": [
+      {
+        "id":"sz-300502","instrumentId":"sz-300502","title":"新易盛 · 研究档案","status":"已完成","attitude":"看好","conclusion":"高速光模块产品竞争力明确，海外算力资本开支仍是核心驱动，需持续跟踪客户集中度。","tags":["算力","光模块","高成长"],"completedAt":"2026-10-28","reviewAt":"2027-01-28","updatedAt":"2026-11-09T21:46:00Z",
+        "contentMarkdown":"### 一、公司概况\n\n公司专注于光模块研发、生产与销售，产品覆盖数据中心和电信网络场景。当前研究重点是高速率产品的收入占比、主要客户需求及产能兑现情况。\n\n### 二、战略与历史\n\n从电信光模块逐步切入高速数通市场，战略重心转向 800G 及更高速率产品。历史成长与海外云厂商资本开支周期具有较高相关性。\n\n### 三、竞争格局\n\n| 观察维度 | 当前判断 | 需要验证 |\n| --- | --- | --- |\n| 产品迭代 | 高速产品推进较快 | 下一代产品量产节奏 |\n| 客户结构 | 头部客户贡献较高 | 客户集中度风险 |\n| 盈利质量 | 规模效应逐步体现 | 价格竞争与毛利率 |\n\n### 四、风险与结论\n\n- 海外算力资本开支不及预期。\n- 主要客户采购份额变化。\n- 高速产品价格下降快于成本改善。\n\n**结论：**长期竞争力值得持续跟踪，将客户结构、产品迭代与毛利率作为后续复查的三个重点。"
+      },
+      {
+        "id":"sz-300308","instrumentId":"sz-300308","title":"中际旭创 · 研究档案","status":"已完成","attitude":"看好","conclusion":"规模优势与盈利质量较好，重点跟踪下一代产品迭代节奏和大客户订单兑现。","tags":["算力","光模块"],"completedAt":"2026-10-26","reviewAt":"2027-01-26","updatedAt":"2026-10-26T20:18:00Z",
+        "contentMarkdown":"### 一、公司概况\n\n公司聚焦高端光通信收发模块，数通市场是主要增长来源。研究重点为高速产品结构、产能利用率和海外客户需求。\n\n### 二、竞争格局\n\n| 观察维度 | 当前判断 | 需要验证 |\n| --- | --- | --- |\n| 规模制造 | 交付能力较强 | 扩产节奏 |\n| 产品结构 | 高速产品占比提升 | 下一代产品进度 |\n\n### 三、风险与结论\n\n- 行业价格竞争加剧。\n- 主要客户资本开支波动。\n\n**结论：**继续作为光模块核心跟踪标的，复查订单、产能与毛利率。"
+      },
+      {
+        "id":"hk-00700","instrumentId":"hk-00700","title":"腾讯控股 · 研究档案","status":"待研究","attitude":"中性","conclusion":"游戏与广告基本盘稳健，AI 投入回报仍需进一步验证。","tags":["港股","互联网"],"completedAt":null,"reviewAt":"2026-12-15","updatedAt":"2026-11-08T20:30:00Z",
+        "contentMarkdown":"### 研究提纲\n\n当前处于资料整理阶段，暂不形成最终结论。\n\n### 一、公司概况\n\n业务覆盖社交、游戏、广告、金融科技与企业服务。现有判断主要基于游戏与广告业务的稳定性。\n\n### 二、待验证问题\n\n- AI 投入对产品和商业化的实际贡献。\n- 游戏管线与海外业务持续性。\n- 资本配置和股东回报。\n\n### 三、下一步\n\n核对最新年报与业绩会材料后，再完成竞争格局和估值部分。"
+      },
+      {
+        "id":"us-aapl","instrumentId":"us-aapl","title":"苹果 · 研究档案","status":"待研究","attitude":"未设态度","conclusion":"尚未形成研究结论。","tags":["美股","消费电子"],"completedAt":null,"reviewAt":null,"updatedAt":"2026-11-08T18:00:00Z",
+        "contentMarkdown":"### 公司概况\n\n待补充。\n\n### 战略与历史\n\n待补充。\n\n### 竞争格局\n\n待补充。\n\n### 风险与结论\n\n待补充。"
+      },
+      {
+        "id":"sh-600036","instrumentId":"sh-600036","title":"招商银行 · 研究档案","status":"已完成","attitude":"看好","conclusion":"高股息底仓，零售业务优势明显，后续重点关注资产质量与分红持续性。","tags":["银行","高股息","底仓"],"completedAt":"2026-10-18","reviewAt":"2027-01-18","updatedAt":"2026-10-18T20:06:00Z",
+        "contentMarkdown":"### 一、公司概况\n\n零售银行基础较好，客户基础和财富管理业务是主要差异化来源。\n\n### 二、核心判断\n\n作为高股息底仓跟踪，重点不是短期价格，而是资产质量、净息差与分红能力的持续性。\n\n### 三、风险与结论\n\n- 净息差继续承压。\n- 零售资产质量波动。\n- 分红比例变化。\n\n**结论：**保留长期跟踪，财报后重点更新资产质量与分红数据。"
+      }
+    ]
+  },
+  "accounts": {
+    "accounts": [
+      {"id":"all","name":"全部账户","type":"汇总账户","currency":"CNY","description":"汇总两个实盘账户，统一折算为人民币","start":"2026-01-01","initial":1100000,"commission":0,"minFee":0,"stamp":0,"fill":"手动填写价格","members":["cmb","global"],"records":174,"archived":false},
+      {"id":"cmb","name":"招商证券","type":"实盘账户","currency":"CNY","description":"A 股实盘账户 · 移动加权成本","start":"2026-01-01","initial":800000,"commission":2.5,"minFee":5,"stamp":5,"fill":"手动填写价格","members":[],"records":126,"archived":false},
+      {"id":"global","name":"港美股账户","type":"实盘账户","currency":"CNY","description":"港股、美股实盘账户 · 支持多币种","start":"2026-01-01","initial":300000,"commission":3,"minFee":15,"stamp":5,"fill":"手动填写价格","members":[],"records":48,"archived":false},
+      {"id":"sim","name":"高股息模拟盘","type":"模拟盘","currency":"CNY","description":"高股息策略验证 · 独立统计","start":"2026-02-01","initial":500000,"commission":0,"minFee":0,"stamp":0,"fill":"录入时实时价格","members":[],"records":32,"archived":false}
+    ]
+  },
+  "settings": {
+    "ai": {
+      "provider": "openai",
+      "baseUrl": "https://api.openai.com/v1",
+      "model": "gpt-4.1-mini"
+    }
+  }
+}

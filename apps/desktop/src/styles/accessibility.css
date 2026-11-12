@@ -1,0 +1,84 @@
+.app-root{font-size:14px}.font-large .data-table th{font-size:11px}.font-large .data-table td{font-size:12px}.font-large .data-table td small{font-size:10px}.font-large .page-heading p{font-size:11px}.font-large .section-title,.font-large .panel-head h2{font-size:15px}.font-large .button{font-size:12px}.font-large .button.compact{font-size:11px}.font-large .text-button{font-size:11px}.font-large .soft-badge,.font-large .research-state{font-size:10px}.font-large .nav-item{font-size:13px}.font-large .side-link{font-size:13px}.font-large .sidebar-label{font-size:11px}.font-large .data-health strong{font-size:11px}.font-large .data-health small{font-size:10px}.font-large .global-search span{font-size:12px}.font-large .market-clocks>span,.font-large .market-clocks strong{font-size:11px}.font-large .quote-time{font-size:11px}.font-large .index-head{font-size:11px}.font-large .index-head small{font-size:10px}.font-large .index-value{font-size:22px}.font-large .change{font-size:11px}.font-large .index-foot{font-size:10px}.font-large .metric-label{font-size:10px}.font-large .turnover-value{font-size:28px}.font-large .turnover-delta span{font-size:12px}.font-large .turnover-delta small{font-size:10px}.font-large .breadth-v2-title strong{font-size:12px}.font-large .breadth-v2-title span,.font-large .breadth-v2-head time{font-size:10px}.font-large .breadth-count{font-size:10px}.font-large .breadth-xlabels span{font-size:9px}.font-large .index-directory-title>span{font-size:10px}.font-large .index-group-tabs button{font-size:11px}.font-large .group-label{font-size:10px}.font-large .market-state{font-size:10px}.font-large .sector-summary-item>span,.font-large .account-manager-summary span{font-size:10px}.font-large .sector-summary-item small,.font-large .account-manager-summary small{font-size:10px}.font-large .vertical-stock-panel .watch-list-toolbar h2{font-size:14px}.font-large .vertical-stock-panel .watch-list-toolbar span{font-size:10px}.font-large .vertical-group-summary{font-size:10px}.font-large .vertical-stock-name strong{font-size:14px}.font-large .vertical-stock-name small{font-size:10px}.font-large .vertical-stock-price{font-size:15px}.font-large .vertical-stock-changes{font-size:10px}.font-large .v-since{font-size:10px}.font-large .v-conclusion{font-size:10px}.font-large .vertical-stock-metrics{font-size:10px}.font-large .vertical-list-footer{font-size:10px}.font-large .stock-tag{font-size:10px}.font-large .research-list-item strong{font-size:13px}.font-large .research-list-item p{font-size:11px}.font-large .research-list-item footer{font-size:10px}.font-large .research-conclusion p{font-size:14px}.font-large .research-conclusion>div{font-size:10px}.font-large .document-body{font-size:14px}.font-large .research-side dl>div{font-size:11px}.font-large .document-head p{font-size:10px}.font-large .dialog-subtitle{font-size:11px}.font-large .command-body strong{font-size:12px}.font-large .command-body small{font-size:10px}.font-large .command-label{font-size:10px}.font-large .condition-chip span{font-size:10px}.font-large .condition-chip strong{font-size:13px}.font-large .condition-footer>span{font-size:10px}.font-large .results-head>div>span{font-size:11px}.font-large .batch-bar{font-size:11px}.font-large .metric-card>span{font-size:11px}.font-large .metric-card>strong{font-size:23px}.font-large .metric-card>small{font-size:10px}.font-large .performance-summary{font-size:11px}.font-large .account-item strong{font-size:12px}.font-large .account-item small{font-size:10px}.font-large .account-item>b{font-size:10px}.font-large .cash-row{font-size:11px}.font-large .form-grid label,.font-large .form-section>label{font-size:11px}.font-large .form-section>div.description{font-size:11px}.font-large .form-actions>span{font-size:10px}.font-large .account-member-row{font-size:11px}.font-large .account-member-row small{font-size:10px}.font-large .account-danger-zone strong{font-size:11px}.font-large .account-danger-zone small{font-size:10px}.font-large .studio-outline button{font-size:13px}.font-large .markdown-preview{font-size:16px;line-height:1.9}.font-xlarge .data-table th{font-size:12px}.font-xlarge .data-table td{font-size:13px}.font-xlarge .vertical-stock-row{min-height:96px}.font-xlarge .vertical-stock-name strong{font-size:15px}.font-xlarge .vertical-stock-price{font-size:16px}.font-xlarge .studio-source,.font-xlarge .markdown-preview{font-size:18px}.catalog-results{max-height:52vh;overflow:auto}.catalog-quote{display:flex;align-items:center;gap:10px;white-space:nowrap;font-size:11px}.catalog-results .setting-row>span:first-child{min-width:0}.catalog-results .setting-row strong{font-size:12px}.catalog-results .setting-row small{font-size:10px}
+
+.index-manager-grid{display:grid;grid-template-columns:1fr 1fr;gap:0 18px;max-height:52vh;overflow:auto}
+
+.app-root{font-size:14px}
+.app-root .data-table th{font-size:12px;height:38px}
+.app-root .data-table td{font-size:13px;height:46px}
+.app-root .data-table td small{font-size:12px}
+.app-root .data-time,.app-root .panel-footer,.app-root .data-source{font-size:12px}
+.app-root .stock-tag{font-size:12px;min-height:23px;padding:3px 7px;line-height:1.35}
+.app-root .setting-row{font-size:14px}
+.app-root .setting-row small,.app-root .dialog-subtitle{font-size:12px}
+.app-root .form-grid label,.app-root .form-section>label{font-size:13px}
+.app-root input,.app-root select,.app-root textarea:not(.studio-source){font-size:14px}
+.app-root .inner-search input{font-size:14px}
+.app-root .button,.app-root .button.compact{font-size:13px}
+.app-root .text-button{font-size:12px}
+.app-root .page-heading p{font-size:13px}
+.app-root .panel-head h2,.app-root .section-title{font-size:16px}
+.app-root .soft-badge,.app-root .research-state{font-size:12px}
+.app-root .nav-item,.app-root .side-link{font-size:14px}
+.app-root .sidebar-label{font-size:12px}
+.app-root .data-health strong{font-size:13px}
+.app-root .data-health small{font-size:12px}
+.app-root .global-search span,.app-root .quote-time{font-size:13px}
+.app-root .market-clocks>span,.app-root .market-clocks strong{font-size:13px}
+.app-root .index-head{font-size:13px}
+.app-root .index-head small,.app-root .index-foot{font-size:12px}
+.app-root .index-value{font-size:23px}
+.app-root .breadth-count,.app-root .breadth-v2-head time,.app-root .breadth-v2-title span{font-size:12px}
+.app-root .breadth-xlabels span{font-size:12px}
+.app-root .breadth-v2-title strong{font-size:14px}
+.app-root .turnover-delta small,.app-root .metric-label,.app-root .chart-legend{font-size:12px}
+.app-root .market-state,.app-root .group-label{font-size:12px}
+.app-root .vertical-stock-panel .watch-list-toolbar h2{font-size:15px}
+.app-root .vertical-stock-panel .watch-list-toolbar span,.app-root .vertical-group-summary{font-size:12px}
+.app-root .vertical-stock-row{min-height:104px}
+.app-root .vertical-stock-name strong{font-size:15px}
+.app-root .vertical-stock-name small,.app-root .vertical-stock-changes,.app-root .v-since,.app-root .v-conclusion,.app-root .vertical-stock-metrics,.app-root .vertical-list-footer{font-size:12px}
+.app-root .vertical-stock-price{font-size:16px}
+.app-root .vertical-list-tools select{font-size:12px;width:100px}
+.app-root .research-list-item strong{font-size:14px}
+.app-root .research-list-item small,.app-root .research-list-item footer{font-size:12px}
+.app-root .research-list-item p{font-size:13px}
+.app-root .research-conclusion p{font-size:15px}
+.app-root .research-conclusion>div,.app-root .document-head p{font-size:12px}
+.app-root .document-body{font-size:15px}
+.app-root .research-side dl>div{font-size:13px}
+.app-root.font-xlarge{font-size:16px}
+.app-root.font-xlarge .data-table td{font-size:15px}
+.dialog{font-size:14px}
+.dialog .dialog-head h2{font-size:17px}
+.dialog .dialog-subtitle,.dialog .setting-row{font-size:13px}
+.dialog .setting-row small{font-size:12px}
+.dialog .form-grid label,.dialog .form-section>label{font-size:13px}
+.dialog input,.dialog select,.dialog textarea{font-size:14px}
+.dialog .button,.dialog .inline-tabs button,.dialog .segmented button{font-size:13px}
+.dialog .stock-tag{font-size:12px;min-height:23px;padding:3px 7px;line-height:1.35}
+.watch-group-actions{display:flex;align-items:center;gap:6px}
+.primary-add{color:var(--accent);background:var(--accent-soft);border:1px solid var(--border)}
+.primary-add:hover{background:var(--surface-hover)}
+.watchlist-page .vertical-watch-layout{height:calc(100vh - 100px)}
+.group-create-row{display:flex;align-items:flex-end;gap:12px}
+.group-create-row label{display:flex;flex:1;flex-direction:column;gap:6px;font-size:13px;color:var(--muted)}
+.group-manager-list{max-height:46vh;overflow:auto;margin-top:16px}
+.group-name-button{display:flex;flex:1;flex-direction:column;align-items:flex-start;gap:4px;padding:8px;border-radius:6px;text-align:left}
+.group-name-button:hover{background:var(--surface-hover)}
+.group-delete-confirm{margin-top:16px;padding:14px;background:var(--up-soft);border:1px solid var(--border);border-radius:8px}
+.group-delete-confirm p{font-size:13px;line-height:1.7}
+.group-delete-confirm>div{display:flex;justify-content:flex-end;gap:8px;margin-top:12px}
+
+.preferences-tabs{display:flex;gap:6px;padding-bottom:12px;border-bottom:1px solid var(--border-soft);margin-bottom:4px}
+.preferences-tabs button{height:34px;padding:0 14px;border-radius:6px;color:var(--muted);font-size:13px}
+.preferences-tabs button.active{background:var(--accent-soft);color:var(--accent)}
+.settings-section{padding:18px 0;border-bottom:1px solid var(--border-soft)}
+.settings-section h3{display:flex;align-items:center;gap:7px;font-size:15px;margin-bottom:8px}
+.settings-field{display:flex;flex-direction:column;gap:6px;margin-top:12px;font-size:13px;color:var(--muted)}
+.settings-actions{display:flex;align-items:center;flex-wrap:wrap;gap:10px;margin-top:12px}
+.settings-success{display:inline-flex;align-items:center;gap:5px;color:var(--down);font-size:13px;line-height:1.7}
+.secret-input{display:flex;align-items:center;gap:6px}
+.secret-input input{flex:1;min-width:0}
+.secret-input .icon-button{width:34px;height:34px;flex:0 0 auto}
+.license-note{margin-top:16px}
+.sidebar-group-title{display:flex;align-items:center;justify-content:space-between}

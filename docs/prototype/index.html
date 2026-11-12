@@ -1,0 +1,290 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>危微 · 个人看盘</title>
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-mark"><span></span><span></span><span></span></div>
+        <div><div class="brand-name">危微</div><div class="brand-sub">个人看盘</div></div>
+      </div>
+      <nav class="main-nav" aria-label="主导航">
+        <button class="nav-item active" data-page="dashboard"><i data-icon="dashboard"></i><span>看盘台</span><kbd>1</kbd></button>
+        <button class="nav-item" data-page="watch"><i data-icon="star"></i><span>自选与持仓</span><kbd>2</kbd></button>
+        <button class="nav-item" data-page="research"><i data-icon="book"></i><span>研究库</span><span class="nav-count">12</span></button>
+        <button class="nav-item" data-page="screener"><i data-icon="filter"></i><span>条件选股</span><kbd>4</kbd></button>
+        <button class="nav-item" data-page="accounts"><i data-icon="wallet"></i><span>账户收益</span><kbd>5</kbd></button>
+      </nav>
+      <div class="sidebar-section">
+        <div class="sidebar-label">常用分组</div>
+        <button class="side-link" data-go-watch="全部账户 · 持仓"><span class="group-dot coral"></span>全部账户 · 持仓<span>7</span></button>
+        <button class="side-link" data-go-watch="观察"><span class="group-dot blue"></span>观察<span>12</span></button>
+        <button class="side-link" data-go-watch="CPO 产业链"><span class="group-dot violet"></span>CPO 产业链<span>8</span></button>
+      </div>
+      <div class="sidebar-bottom">
+        <button class="data-health" id="data-health"><span class="health-icon"><i data-icon="database"></i></span><span><strong>行情与同步正常</strong><small>刚刚同步 · 3 个数据源</small></span><span class="status-dot"></span></button>
+        <button class="nav-item subtle" id="settings-button"><i data-icon="settings"></i><span>设置</span></button>
+        <div class="user-block"><div class="avatar">W</div><div><strong>Wenzi</strong><small>个人工作区</small></div><i data-icon="more"></i></div>
+      </div>
+    </aside>
+
+    <div class="workspace">
+      <header class="topbar">
+        <button class="global-search" id="search-button"><i data-icon="search"></i><span>搜索股票、ETF、指数、板块或研究笔记</span><kbd>⌘ K</kbd></button>
+        <div class="market-clocks">
+          <span><b class="status-dot"></b>A 股 <strong>交易中</strong></span>
+          <span><b class="status-dot"></b>港股 <strong>交易中</strong></span>
+          <span><b class="status-dot muted"></b>美股 <strong class="muted-text">已收盘</strong></span>
+        </div>
+        <div class="topbar-actions">
+          <span class="quote-time">10:32:18</span>
+          <button class="icon-button" id="theme-button" title="切换深浅色"><i data-icon="sun"></i></button>
+          <button class="icon-button" title="更多"><i data-icon="more"></i></button>
+        </div>
+      </header>
+
+      <main class="main-content">
+        <section class="page active" id="page-dashboard">
+          <div class="page-heading">
+            <div><h1>看盘台</h1><p>11 月 10 日，星期二 <span>·</span> 看清市场，再回到自己的判断</p></div>
+            <div class="heading-actions"><button class="button ghost"><i data-icon="layout"></i>自定义布局</button><button class="icon-button bordered"><i data-icon="more"></i></button></div>
+          </div>
+
+          <div class="section-topline"><div class="section-title"><h2>关注指数</h2><span class="soft-badge">A 股核心</span></div><button class="text-button">管理指数<i data-icon="chevron-right"></i></button></div>
+          <div class="index-grid">
+            <article class="index-card selected" data-symbol="上证指数">
+              <div class="index-head"><span>上证指数 <small>000001</small></span><span class="market-tag">SH</span></div>
+              <div class="index-main"><div><strong class="index-value">3,982.16</strong><span class="change up">+0.68%</span></div><div class="sparkline up-line" data-spark="12,16,14,18,20,19,26,24,31,29,36,39,37,43,46,44,51,55"></div></div>
+              <div class="index-foot"><span>成交额 <b>4,126.8 亿</b></span><span class="up">较昨日 +12.4%</span></div>
+            </article>
+            <article class="index-card" data-symbol="深证成指">
+              <div class="index-head"><span>深证成指 <small>399001</small></span><span class="market-tag">SZ</span></div>
+              <div class="index-main"><div><strong class="index-value">13,286.42</strong><span class="change up">+1.12%</span></div><div class="sparkline up-line" data-spark="18,16,19,22,20,25,28,26,30,33,31,38,36,41,45,48,47,53"></div></div>
+              <div class="index-foot"><span>成交额 <b>5,208.6 亿</b></span><span class="up">较昨日 +18.2%</span></div>
+            </article>
+            <article class="index-card" data-symbol="中证1000">
+              <div class="index-head"><span>中证 1000 <small>000852</small></span><span class="market-tag">CSI</span></div>
+              <div class="index-main"><div><strong class="index-value">7,126.85</strong><span class="change down">−0.24%</span></div><div class="sparkline down-line" data-spark="48,50,46,47,43,45,41,44,38,40,36,39,34,32,35,31,33,30"></div></div>
+              <div class="index-foot"><span>成交额 <b>2,036.2 亿</b></span><span class="down">较昨日 −3.8%</span></div>
+            </article>
+            <article class="index-card" data-symbol="中证全指">
+              <div class="index-head"><span>中证全指 <small>000985</small></span><span class="market-tag">CSI</span></div>
+              <div class="index-main"><div><strong class="index-value">5,846.31</strong><span class="change up">+0.46%</span></div><div class="sparkline up-line" data-spark="20,19,23,21,26,25,29,32,30,35,33,38,37,41,40,45,47,49"></div></div>
+              <div class="index-foot"><span>成交额 <b>9,335.4 亿</b></span><span class="up">较昨日 +14.7%</span></div>
+            </article>
+          </div>
+
+          <div class="dashboard-middle">
+            <article class="panel market-panel">
+              <div class="panel-head"><div><h2>市场整体</h2><span class="data-time">10:32 更新</span></div><button class="text-button">沪深京<i data-icon="chevron-down"></i></button></div>
+              <div class="turnover-row"><div><span class="metric-label">两市合计成交额</span><div class="turnover-value">9,335.4 <small>亿</small></div></div><div class="turnover-delta"><span class="up">↗ +14.7%</span><small>较昨日同一时刻</small></div></div>
+              <div class="amount-chart" id="amount-chart"></div>
+              <div class="chart-legend"><span><i class="legend-line current"></i>今日累计成交额</span><span><i class="legend-line previous"></i>昨日同期</span></div>
+              <div class="breadth-head"><span>涨跌家数分布</span><span><b class="up">3,281 家上涨</b><b class="down">1,846 家下跌</b></span></div>
+              <div class="breadth-bar" title="点击查看各区间股票"><span class="limit-up" style="width:4%"></span><span class="rise-strong" style="width:15%"></span><span class="rise" style="width:39%"></span><span class="flat" style="width:5%"></span><span class="fall" style="width:28%"></span><span class="fall-strong" style="width:8%"></span><span class="limit-down" style="width:1%"></span></div>
+              <div class="breadth-labels"><span class="up">涨停 86</span><span>＞5%</span><span>0–5%</span><span>平盘 263</span><span>0–5%</span><span>＞5%</span><span class="down">跌停 12</span></div>
+            </article>
+
+            <article class="panel sector-panel">
+              <div class="panel-head"><div><h2>自选板块</h2><span class="data-time">行业 / 概念同屏</span></div><div class="segmented small"><button class="active">今日</button><button>5 日</button><button>20 日</button><button>60 日</button></div></div>
+              <table class="data-table sector-table">
+                <thead><tr><th>板块</th><th class="num">涨跌幅</th><th class="num">成交额</th><th class="num">较昨日</th><th class="num">涨 / 跌</th><th>领涨股</th><th class="num">当日走势</th></tr></thead>
+                <tbody>
+                  <tr class="clickable sector-row" data-sector="CPO"><td><span class="board-type concept">概</span><strong>CPO</strong></td><td class="num up strong">+3.86%</td><td class="num">486.2 亿</td><td class="num up">+28.4%</td><td class="num"><span class="up">28</span> / <span class="down">4</span></td><td>新易盛 <span class="up">+8.42%</span></td><td><div class="sparkline up-line" data-spark="20,24,23,28,32,31,38,42,40,48,52,55"></div></td></tr>
+                  <tr class="clickable sector-row" data-sector="光模块"><td><span class="board-type concept">概</span><strong>光模块</strong></td><td class="num up strong">+3.24%</td><td class="num">392.6 亿</td><td class="num up">+21.6%</td><td class="num"><span class="up">24</span> / <span class="down">6</span></td><td>中际旭创 <span class="up">+6.18%</span></td><td><div class="sparkline up-line" data-spark="22,21,25,29,28,32,36,34,39,43,46,49"></div></td></tr>
+                  <tr class="clickable sector-row" data-sector="半导体"><td><span class="board-type industry">行</span><strong>半导体</strong></td><td class="num up strong">+2.18%</td><td class="num">826.4 亿</td><td class="num up">+16.2%</td><td class="num"><span class="up">102</span> / <span class="down">48</span></td><td>寒武纪 <span class="up">+5.72%</span></td><td><div class="sparkline up-line" data-spark="26,24,28,27,31,35,33,37,36,41,43,45"></div></td></tr>
+                  <tr class="clickable sector-row" data-sector="人形机器人"><td><span class="board-type concept">概</span><strong>人形机器人</strong></td><td class="num up strong">+1.62%</td><td class="num">518.3 亿</td><td class="num down">−2.6%</td><td class="num"><span class="up">68</span> / <span class="down">31</span></td><td>三花智控 <span class="up">+4.08%</span></td><td><div class="sparkline up-line" data-spark="25,29,27,31,35,33,36,39,37,40,38,42"></div></td></tr>
+                  <tr class="clickable sector-row" data-sector="通信设备"><td><span class="board-type industry">行</span><strong>通信设备</strong></td><td class="num up strong">+1.28%</td><td class="num">364.9 亿</td><td class="num up">+9.8%</td><td class="num"><span class="up">61</span> / <span class="down">28</span></td><td>新易盛 <span class="up">+8.42%</span></td><td><div class="sparkline up-line" data-spark="26,25,29,28,32,31,35,34,38,37,40,42"></div></td></tr>
+                  <tr class="clickable sector-row" data-sector="汽车零部件"><td><span class="board-type industry">行</span><strong>汽车零部件</strong></td><td class="num down strong">−0.46%</td><td class="num">298.1 亿</td><td class="num down">−8.2%</td><td class="num"><span class="up">72</span> / <span class="down">126</span></td><td>拓普集团 <span class="up">+2.16%</span></td><td><div class="sparkline down-line" data-spark="43,45,41,42,38,40,36,37,34,36,32,33"></div></td></tr>
+                </tbody>
+              </table>
+              <div class="panel-footer"><span>申万二级行业 · 同花顺概念</span><button class="text-button">查看全部板块<i data-icon="arrow-right"></i></button></div>
+            </article>
+          </div>
+
+          <article class="panel watch-preview">
+            <div class="panel-head"><div class="section-title"><h2>持仓速览</h2><div class="inline-tabs"><button class="active">全部账户</button><button>观察</button><button>CPO 产业链</button></div></div><button class="text-button" data-nav="watch">进入自选与持仓<i data-icon="arrow-right"></i></button></div>
+            <div class="watch-summary"><span>今日等权涨跌 <b class="up">+1.26%</b></span><span>上涨 / 下跌 <b><em class="up">5</em> / <em class="down">2</em></b></span><span>合计成交额 <b>286.4 亿</b></span><span>领涨 <b>新易盛 <em class="up">+8.42%</em></b></span><span>领跌 <b>腾讯控股 <em class="down">−1.12%</em></b></span></div>
+            <table class="data-table holdings-preview-table">
+              <thead><tr><th>股票</th><th class="num">最新价</th><th class="num">今日</th><th class="num">当日走势</th><th class="num">成交额</th><th class="num">较昨日</th><th class="num">换手率</th><th class="num">浮动盈亏</th><th>研究结论</th></tr></thead>
+              <tbody>
+                <tr class="clickable" data-open-stock="新易盛"><td><strong>新易盛</strong><small>300502 · SZ</small></td><td class="num strong">¥ 386.20</td><td class="num up strong">+8.42%</td><td><div class="sparkline up-line" data-spark="20,18,24,27,26,34,38,36,43,48,52,56"></div></td><td class="num">86.2 亿</td><td class="num up">+32.6%</td><td class="num">6.82%</td><td class="num up">+24.68%</td><td><span class="research-state done">已完成</span><span class="conclusion-cell">高速光模块竞争力明确</span></td></tr>
+                <tr class="clickable" data-open-stock="中际旭创"><td><strong>中际旭创</strong><small>300308 · SZ</small></td><td class="num strong">¥ 298.66</td><td class="num up strong">+6.18%</td><td><div class="sparkline up-line" data-spark="22,25,24,29,31,30,36,39,38,44,47,50"></div></td><td class="num">72.8 亿</td><td class="num up">+24.1%</td><td class="num">4.26%</td><td class="num up">+18.32%</td><td><span class="research-state done">已完成</span><span class="conclusion-cell">规模优势与盈利质量较好</span></td></tr>
+                <tr class="clickable" data-open-stock="招商银行"><td><strong>招商银行</strong><small>600036 · SH</small></td><td class="num strong">¥ 42.18</td><td class="num up">+0.86%</td><td><div class="sparkline up-line" data-spark="27,26,29,28,31,30,33,35,34,36,38,39"></div></td><td class="num">28.6 亿</td><td class="num down">−4.2%</td><td class="num">0.32%</td><td class="num up">+12.16%</td><td><span class="research-state done">已完成</span><span class="conclusion-cell">高股息底仓，关注资产质量</span></td></tr>
+                <tr class="clickable" data-open-stock="腾讯控股"><td><strong>腾讯控股</strong><small>00700 · HK</small></td><td class="num strong">HK$ 612.00</td><td class="num down strong">−1.12%</td><td><div class="sparkline down-line" data-spark="48,46,47,42,44,39,41,36,38,34,35,31"></div></td><td class="num">42.1 亿</td><td class="num up">+8.6%</td><td class="num">0.28%</td><td class="num up">+9.28%</td><td><span class="research-state doing">待研究</span><span class="conclusion-cell">游戏与广告基本盘稳健</span></td></tr>
+              </tbody>
+            </table>
+          </article>
+        </section>
+
+        <section class="page" id="page-watch">
+          <div class="page-heading">
+            <div><h1>自选与持仓</h1><p>连续查看走势，研究结论始终在旁边</p></div>
+            <div class="heading-actions"><button class="button ghost"><i data-icon="upload"></i>批量导入</button><button class="button primary" id="add-watch-button"><i data-icon="plus"></i>添加股票</button></div>
+          </div>
+          <div class="watch-layout">
+            <aside class="group-sidebar panel">
+              <div class="group-side-head"><span>股票分组</span><button class="icon-button small"><i data-icon="plus"></i></button></div>
+              <button class="group-item active"><i data-icon="wallet"></i><span>全部账户 · 持仓</span><b>7</b></button>
+              <button class="group-item"><i data-icon="star"></i><span>观察</span><b>12</b></button>
+              <button class="group-item"><i data-icon="layers"></i><span>CPO 产业链</span><b>8</b></button>
+              <button class="group-item"><i data-icon="layers"></i><span>高股息</span><b>9</b></button>
+              <div class="group-divider"></div>
+              <div class="sidebar-label">智能分组</div>
+              <button class="group-item"><i data-icon="book"></i><span>已研究</span><b>26</b></button>
+              <button class="group-item"><i data-icon="activity"></i><span>今日放量</span><b class="up">4</b></button>
+              <div class="group-tip"><i data-icon="keyboard"></i><span>使用 <kbd>↑</kbd> <kbd>↓</kbd><br/>快速切换股票</span></div>
+            </aside>
+            <div class="watch-main">
+              <article class="panel watch-list-panel">
+                <div class="watch-list-toolbar"><div><h2>全部账户 · 持仓</h2><span>7 只股票</span></div><div class="list-summary"><span>今日等权 <b class="up">+1.26%</b></span><span><b class="up">5 涨</b> / <b class="down">2 跌</b></span><span>成交额 <b>286.4 亿</b></span></div><div class="toolbar-actions"><button class="button compact ghost"><i data-icon="columns"></i>显示字段</button><button class="icon-button small bordered"><i data-icon="more"></i></button></div></div>
+                <table class="data-table watch-full-table">
+                  <thead><tr><th>股票 / 研究状态</th><th class="num">最新价</th><th class="num">今日</th><th class="num">当日走势</th><th class="num">成交额</th><th class="num">较昨日</th><th class="num">换手率</th><th class="num">入组以来</th><th>一句话结论</th></tr></thead>
+                  <tbody id="watch-table-body">
+                    <tr class="clickable selected" data-stock="新易盛" data-seed="8"><td><strong>新易盛</strong><small>300502 · SZ <span class="research-state done">已完成</span></small></td><td class="num strong">¥ 386.20</td><td class="num up strong">+8.42%</td><td><div class="sparkline up-line" data-spark="20,18,24,27,26,34,38,36,43,48,52,56"></div></td><td class="num">86.2 亿</td><td class="num up">+32.6%</td><td class="num">6.82%</td><td class="num up">+26.42%</td><td class="conclusion-cell">高速光模块竞争力明确</td></tr>
+                    <tr class="clickable" data-stock="中际旭创" data-seed="12"><td><strong>中际旭创</strong><small>300308 · SZ <span class="research-state done">已完成</span></small></td><td class="num strong">¥ 298.66</td><td class="num up strong">+6.18%</td><td><div class="sparkline up-line" data-spark="22,25,24,29,31,30,36,39,38,44,47,50"></div></td><td class="num">72.8 亿</td><td class="num up">+24.1%</td><td class="num">4.26%</td><td class="num up">+21.08%</td><td class="conclusion-cell">规模优势与盈利质量较好</td></tr>
+                    <tr class="clickable" data-stock="招商银行" data-seed="18"><td><strong>招商银行</strong><small>600036 · SH <span class="research-state done">已完成</span></small></td><td class="num strong">¥ 42.18</td><td class="num up">+0.86%</td><td><div class="sparkline up-line" data-spark="27,26,29,28,31,30,33,35,34,36,38,39"></div></td><td class="num">28.6 亿</td><td class="num down">−4.2%</td><td class="num">0.32%</td><td class="num up">+16.80%</td><td class="conclusion-cell">高股息底仓，关注资产质量</td></tr>
+                    <tr class="clickable" data-stock="腾讯控股" data-seed="22"><td><strong>腾讯控股</strong><small>00700 · HK <span class="research-state doing">待研究</span></small></td><td class="num strong">HK$ 612.00</td><td class="num down strong">−1.12%</td><td><div class="sparkline down-line" data-spark="48,46,47,42,44,39,41,36,38,34,35,31"></div></td><td class="num">42.1 亿</td><td class="num up">+8.6%</td><td class="num">0.28%</td><td class="num up">+9.28%</td><td class="conclusion-cell">游戏与广告基本盘稳健</td></tr>
+                    <tr class="clickable" data-stock="苹果" data-seed="30"><td><strong>苹果</strong><small>AAPL · US <span class="research-state todo">待研究</span></small></td><td class="num strong">$ 268.42</td><td class="num down">−0.36%</td><td><div class="sparkline down-line" data-spark="40,42,39,41,38,36,39,35,37,34,36,35"></div></td><td class="num">68.4 亿</td><td class="num down">−12.8%</td><td class="num">0.42%</td><td class="num up">+6.20%</td><td class="muted-text">尚未形成研究结论</td></tr>
+                  </tbody>
+                </table>
+              </article>
+
+              <div class="watch-detail-grid">
+                <article class="panel chart-panel">
+                  <div class="chart-stock-head"><div><div class="stock-title"><h2 id="chart-stock-name">新易盛</h2><span id="chart-stock-code">300502 · SZ</span><span class="color-mark"></span></div><div class="stock-quote"><strong id="chart-stock-price">386.20</strong><span class="up" id="chart-stock-change">+30.02&nbsp;&nbsp;+8.42%</span></div></div><div class="chart-stock-actions"><button class="button compact ghost"><i data-icon="star"></i>已自选</button><button class="button compact ghost" data-nav="research"><i data-icon="book"></i>研究档案</button><button class="icon-button small bordered"><i data-icon="more"></i></button></div></div>
+                  <div class="chart-toolbar"><div class="timeframes"><button class="active" data-period="日K">日K</button><button data-period="分时">分时</button><button data-period="5日">5日</button><button data-period="1m">1 分</button><button data-period="5m">5 分</button><button data-period="15m">15 分</button><button data-period="30m">30 分</button><button data-period="60m">60 分</button><button data-period="周K">周K</button><button data-period="月K">月K</button></div><div class="chart-options"><button>前复权<i data-icon="chevron-down"></i></button><button>普通坐标<i data-icon="chevron-down"></i></button><button class="icon-button small"><i data-icon="expand"></i></button></div></div>
+                  <div class="ohlc-line"><span id="chart-period-label">2026/11/10</span><span>开 <b>358.00</b></span><span>高 <b class="up">389.80</b></span><span>低 <b>356.22</b></span><span>收 <b class="up">386.20</b></span><span>成交额 <b>86.2 亿</b></span><span>换手率 <b>6.82%</b></span></div>
+                  <div class="candle-chart" id="main-candle-chart"></div>
+                  <div class="chart-bottom-bar"><span><i class="crosshair-icon"></i>拖动查看历史 · 滚轮缩放 · 框选区间统计</span><span>成交量 <button>股数<i data-icon="chevron-down"></i></button></span></div>
+                </article>
+                <aside class="panel research-summary">
+                  <div class="panel-head"><h3>研究摘要</h3><span class="research-state done" id="summary-status">已完成</span></div>
+                  <div class="attitude"><span>当前态度</span><strong id="summary-attitude">看好</strong></div>
+                  <blockquote id="summary-conclusion">高速光模块产品竞争力明确，海外算力资本开支仍是核心驱动，需持续跟踪客户集中度。</blockquote>
+                  <div class="tag-list" id="summary-tags"><span>#算力</span><span>#光模块</span><span>#高成长</span></div>
+                  <dl class="research-meta"><div><dt>研究完成</dt><dd>2026/10/28</dd></div><div><dt>下次复查</dt><dd>2027/01/28</dd></div><div><dt>补充记录</dt><dd>3 条</dd></div><div><dt>历史版本</dt><dd>5 个</dd></div></dl>
+                  <button class="button full ghost" data-nav="research">打开完整研究档案<i data-icon="arrow-right"></i></button>
+                  <div class="position-mini"><div><span>持仓数量</span><strong>1,200 股</strong></div><div><span>持仓成本</span><strong>¥ 309.87</strong></div><div><span>浮动盈亏</span><strong class="up">+¥ 91,596.00</strong></div><div><span>仓位占比</span><strong>36.02%</strong></div></div>
+                </aside>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="page" id="page-research">
+          <div class="page-heading">
+            <div><h1>研究库</h1><p>研究在这里沉淀，与短期股价保持距离</p></div>
+            <div class="heading-actions"><button class="button ghost"><i data-icon="download"></i>导出备份</button><button class="button ghost"><i data-icon="upload"></i>导入 Markdown / Word</button><button class="button primary"><i data-icon="plus"></i>新建研究</button></div>
+          </div>
+          <div class="research-toolbar panel"><div class="inner-search"><i data-icon="search"></i><input placeholder="搜索研究正文、股票或附件名" /></div><button class="filter-chip active">全部 <span>38</span></button><button class="filter-chip">待研究 <span>18</span></button><button class="filter-chip">已完成 <span>18</span></button><button class="filter-chip">已放弃 <span>2</span></button><div class="toolbar-spacer"></div><button class="button compact ghost">态度：全部<i data-icon="chevron-down"></i></button><button class="button compact ghost">标签<i data-icon="chevron-down"></i></button></div>
+          <div class="research-layout">
+            <aside class="panel research-list">
+              <div class="research-list-head"><span>38 份研究档案</span><button>最近更新<i data-icon="chevron-down"></i></button></div>
+              <button class="research-list-item active"><div><strong>新易盛</strong><small>300502</small><span class="research-state done">已完成</span></div><p>高速光模块产品竞争力明确，海外算力资本开支仍是核心驱动。</p><footer><span class="attitude-positive">看好</span><span>10 月 28 日</span></footer></button>
+              <button class="research-list-item"><div><strong>中际旭创</strong><small>300308</small><span class="research-state done">已完成</span></div><p>规模优势与盈利质量较好，关注下一代产品迭代节奏。</p><footer><span class="attitude-positive">看好</span><span>10 月 26 日</span></footer></button>
+              <button class="research-list-item"><div><strong>腾讯控股</strong><small>00700 · HK</small><span class="research-state doing">待研究</span></div><p>游戏与广告基本盘稳健，AI 投入回报仍需进一步验证。</p><footer><span class="attitude-neutral">中性</span><span>昨天更新</span></footer></button>
+              <button class="research-list-item"><div><strong>苹果</strong><small>AAPL · US</small><span class="research-state todo">待研究</span></div><p class="muted-text">尚未形成研究结论</p><footer><span>未设态度</span><span>11 月 8 日加入</span></footer></button>
+              <button class="research-list-item"><div><strong>招商银行</strong><small>600036</small><span class="research-state done">已完成</span></div><p>高股息底仓，零售业务优势明显，重点关注资产质量。</p><footer><span class="attitude-positive">看好</span><span>10 月 18 日</span></footer></button>
+            </aside>
+            <article class="panel research-document">
+              <div class="document-head"><div><div class="stock-title"><h2>新易盛</h2><span>300502 · SZ</span><span class="research-state done">已完成</span></div><p>最后更新于 2026/11/09 21:46</p></div><div><button class="button compact ghost"><i data-icon="history"></i>历史版本</button><button class="button compact primary"><i data-icon="edit"></i>编辑研究</button></div></div>
+              <div class="research-conclusion"><span>一句话结论</span><p>高速光模块产品竞争力明确，海外算力资本开支仍是核心驱动，需持续跟踪客户集中度。</p><div><span class="attitude-positive">看好</span><span>研究完成于 2026/10/28</span><span>下次复查 2027/01/28</span></div></div>
+              <div class="document-body">
+                <h3>一、公司概况</h3><p>公司专注于光模块研发、生产与销售，产品覆盖数据中心和电信网络场景。当前研究重点是高速率产品的收入占比、主要客户需求及产能兑现情况。</p>
+                <h3>二、战略与历史</h3><p>从电信光模块逐步切入高速数通市场，战略重心转向 800G 及更高速率产品。历史成长与海外云厂商资本开支周期具有较高相关性。</p>
+                <h3>三、竞争格局</h3>
+                <table><thead><tr><th>观察维度</th><th>当前判断</th><th>需要验证</th></tr></thead><tbody><tr><td>产品迭代</td><td>高速产品推进较快</td><td>下一代产品量产节奏</td></tr><tr><td>客户结构</td><td>头部客户贡献较高</td><td>客户集中度风险</td></tr><tr><td>盈利质量</td><td>规模效应逐步体现</td><td>价格竞争与毛利率</td></tr></tbody></table>
+                <h3>四、风险与结论</h3><ul><li>海外算力资本开支不及预期。</li><li>主要客户采购份额变化。</li><li>高速产品价格下降快于成本改善。</li></ul><p><strong>结论：</strong>长期竞争力值得持续跟踪，将客户结构、产品迭代与毛利率作为后续复查的三个重点。</p>
+              </div>
+            </article>
+            <aside class="panel research-side">
+              <section><h3>研究信息</h3><dl><div><dt>研究状态</dt><dd><span class="research-state done">已完成</span></dd></div><div><dt>态度</dt><dd class="attitude-positive">看好</dd></div><div><dt>所属概念</dt><dd>CPO · 光模块</dd></div><div><dt>申万行业</dt><dd>通信设备</dd></div></dl><div class="tag-list"><span>#算力</span><span>#光模块</span><span>#高成长</span></div></section>
+              <section><div class="side-section-head"><h3>附件与链接</h3><button class="icon-button small"><i data-icon="plus"></i></button></div><button class="attachment"><i data-icon="file"></i><span><strong>新易盛研究底稿.pdf</strong><small>PDF · 4.8 MB</small></span></button><button class="attachment"><i data-icon="file"></i><span><strong>2026Q3 财报摘要.md</strong><small>Markdown · 24 KB</small></span></button><button class="attachment"><i data-icon="link"></i><span><strong>公司投资者关系页面</strong><small>外部参考链接</small></span></button></section>
+              <section><div class="side-section-head"><h3>补充记录</h3><button class="text-button">添加</button></div><div class="supplement"><time>11 月 09 日</time><p>三季报已核对，更新产能与毛利率相关段落。</p></div><div class="supplement"><time>10 月 30 日</time><p>补充主要客户资本开支跟踪。</p></div></section>
+              <button class="button full ghost"><i data-icon="history"></i>查看 5 个历史版本</button>
+            </aside>
+          </div>
+        </section>
+
+        <section class="page" id="page-screener">
+          <div class="page-heading">
+            <div><h1>条件选股</h1><p>只按明确条件过滤，不评价公司，不推荐买卖</p></div>
+            <div class="heading-actions"><button class="button ghost"><i data-icon="download"></i>导出 CSV</button><button class="button primary" id="run-screen-top"><i data-icon="play"></i>运行筛选</button></div>
+          </div>
+          <div class="ai-query panel"><div class="ai-icon"><i data-icon="sparkles"></i></div><div class="ai-input-wrap"><label>用一句话描述筛选条件</label><input id="ai-query-input" value="股息率 4% 以上、总市值大于 500 亿、属于银行或公用事业、排除房地产、ROE 10% 以上" /></div><button class="button ai-button" id="parse-conditions">解析为条件<i data-icon="arrow-right"></i></button><span class="ai-note">AI 仅翻译条件<br/>确认后才执行</span></div>
+          <div class="screen-builder panel">
+            <aside class="saved-plans"><div class="side-section-head"><h3>选股方案</h3><button class="icon-button small"><i data-icon="plus"></i></button></div><button class="saved-plan active"><i data-icon="bookmark"></i><span>高股息稳健筛选<small>6 个条件 · 昨天运行</small></span></button><button class="saved-plan"><i data-icon="bookmark"></i><span>算力链中小市值<small>4 个条件 · 3 天前</small></span></button><button class="saved-plan"><i data-icon="bookmark"></i><span>高 ROE 低负债<small>5 个条件 · 1 周前</small></span></button><div class="data-scope"><i data-icon="database"></i><p><strong>A 股基本面数据</strong><br/>估值：2026/11/09 收盘<br/>财务：2025 年报<br/><span class="up">数据更新正常</span></p></div></aside>
+            <div class="condition-area"><div class="condition-head"><div><h2>高股息稳健筛选 <span class="soft-badge">已保存</span></h2><p>全市场 A 股 · 不同条件之间为「且」</p></div><button class="text-button">手动添加条件<i data-icon="plus"></i></button></div><div class="condition-grid"><button class="condition-chip"><span>股息率（TTM）</span><strong>≥ 4.0%</strong><i data-icon="x"></i></button><button class="condition-chip"><span>总市值</span><strong>≥ 500 亿元</strong><i data-icon="x"></i></button><button class="condition-chip wide"><span>申万行业 · 属于</span><strong>银行 或 公用事业</strong><i data-icon="x"></i></button><button class="condition-chip"><span>ROE · 2025 年报</span><strong>≥ 10.0%</strong><i data-icon="x"></i></button><button class="condition-chip exclude"><span>申万行业 · 不属于</span><strong>房地产</strong><i data-icon="x"></i></button><button class="condition-chip exclude"><span>其他</span><strong>排除 ST</strong><i data-icon="x"></i></button></div><div class="condition-footer"><span><i data-icon="info"></i>所有财务条件均标明报告期；结果可复现、可检查。</span><div><button class="button compact ghost">保存方案</button><button class="button compact primary" id="run-screen"><i data-icon="play"></i>运行筛选</button></div></div></div>
+          </div>
+          <article class="panel screen-results">
+            <div class="results-head"><div><h2>筛选结果</h2><span class="hit-count">18</span><span>只符合条件的股票</span></div><div class="results-actions"><span>用时 0.82 秒 · 11 月 10 日 10:31</span><button class="button compact ghost"><i data-icon="columns"></i>显示字段</button></div></div>
+            <div class="batch-bar"><label><input type="checkbox"/> 全选当前结果</label><span>已选择 <b>0</b> 只</span><button class="button compact ghost"><i data-icon="book"></i>加入研究池</button><button class="button compact ghost"><i data-icon="star"></i>加入自选分组</button></div>
+            <table class="data-table results-table"><thead><tr><th></th><th>股票 / 研究状态</th><th>申万行业</th><th class="num">总市值</th><th class="num">股息率 TTM</th><th class="num">ROE<br/><small>2025 年报</small></th><th class="num">净利率<br/><small>2025 年报</small></th><th class="num">今日涨跌</th><th>一句话结论</th></tr></thead><tbody>
+              <tr><td><input type="checkbox"/></td><td><strong>招商银行</strong><small>600036 · SH <span class="research-state done">已完成</span></small></td><td>银行</td><td class="num">1.06 万亿</td><td class="num strong">5.12%</td><td class="num">15.42%</td><td class="num">32.18%</td><td class="num up">+0.86%</td><td class="conclusion-cell">高股息底仓，关注资产质量</td></tr>
+              <tr><td><input type="checkbox"/></td><td><strong>中国核电</strong><small>601985 · SH <span class="research-state done">已完成</span></small></td><td>电力</td><td class="num">2,126 亿</td><td class="num strong">4.12%</td><td class="num">11.86%</td><td class="num">24.32%</td><td class="num up">+1.24%</td><td class="conclusion-cell">核电运营稳健，关注机组投产</td></tr>
+              <tr><td><input type="checkbox"/></td><td><strong>长江电力</strong><small>600900 · SH <span class="research-state doing">待研究</span></small></td><td>电力</td><td class="num">7,028 亿</td><td class="num strong">4.18%</td><td class="num">16.08%</td><td class="num">42.36%</td><td class="num down">−0.18%</td><td class="conclusion-cell">水电资产优质，估值待核对</td></tr>
+              <tr><td><input type="checkbox"/></td><td><strong>工商银行</strong><small>601398 · SH <span class="research-state todo">待研究</span></small></td><td>银行</td><td class="num">2.72 万亿</td><td class="num strong">4.62%</td><td class="num">10.86%</td><td class="num">34.02%</td><td class="num up">+0.42%</td><td class="muted-text">尚未形成研究结论</td></tr>
+              <tr><td><input type="checkbox"/></td><td><strong>川投能源</strong><small>600674 · SH <span class="research-state none">未研究</span></small></td><td>电力</td><td class="num">1,026 亿</td><td class="num strong">4.36%</td><td class="num">13.24%</td><td class="num">38.16%</td><td class="num up">+0.26%</td><td class="muted-text">尚未形成研究结论</td></tr>
+            </tbody></table>
+            <div class="table-pagination"><span>第 1–5 只，共 18 只</span><div><button disabled>上一页</button><button class="active">1</button><button>2</button><button>3</button><button>4</button><button>下一页</button></div></div>
+          </article>
+        </section>
+
+        <section class="page" id="page-accounts">
+          <div class="page-heading">
+            <div><div class="account-title"><h1>全部账户</h1><span class="soft-badge">实盘汇总</span><button class="icon-button small"><i data-icon="chevron-down"></i></button></div><p>统一折算为人民币 · 数据截至 2026/11/10 10:32</p></div>
+            <div class="heading-actions"><button class="button ghost"><i data-icon="upload"></i>导入 CSV</button><button class="button ghost"><i data-icon="cash"></i>资金记录</button><button class="button primary" id="record-trade"><i data-icon="plus"></i>记一笔</button></div>
+          </div>
+          <div class="account-metrics">
+            <article class="metric-card primary-metric"><span>总资产 <i data-icon="eye"></i></span><strong>¥ 1,286,430.52</strong><small>持仓市值 ¥ 1,086,208.40</small></article>
+            <article class="metric-card"><span>当日盈亏</span><strong class="up">+¥ 8,642.31</strong><small class="up">+0.68%</small></article>
+            <article class="metric-card"><span>累计盈亏金额</span><strong class="up">+¥ 186,420.18</strong><small>累计净投入 ¥ 1,100,010.34</small></article>
+            <article class="metric-card"><span>累计收益率 <button class="hint" title="时间加权收益率，不受资金转入转出影响">?</button></span><strong class="up">+18.42%</strong><small>时间加权 · 份额净值法</small></article>
+            <article class="metric-card"><span>资金加权收益率</span><strong class="up">+15.76%</strong><small>XIRR · 年化</small></article>
+            <article class="metric-card"><span>最大回撤</span><strong class="down">−8.32%</strong><small>近一年</small></article>
+          </div>
+          <div class="account-chart-grid">
+            <article class="panel performance-panel"><div class="panel-head"><div class="section-title"><h2>收益表现</h2><div class="inline-tabs"><button class="active">账户净值</button><button>总资产 / 净投入</button></div></div><div class="segmented small"><button>近 1 月</button><button>近 3 月</button><button class="active">近 1 年</button><button>今年以来</button><button>全部</button></div></div><div class="performance-summary"><span>区间收益率 <b class="up">+18.42%</b></span><span>年化收益率 <b class="up">+16.08%</b></span><span>基准：沪深 300 <b class="up">+9.26%</b></span><span>超额收益 <b class="up">+9.16%</b></span></div><div class="performance-chart" id="performance-chart"></div><div class="chart-legend account-legend"><span><i class="legend-line current"></i>全部账户净值</span><span><i class="legend-line benchmark"></i>沪深 300</span><span class="legend-note">资金转入转出不影响时间加权收益率</span></div></article>
+            <aside class="panel account-list"><div class="panel-head"><h2>账户构成</h2><button class="text-button">账户对比</button></div><button class="account-item active"><span class="account-icon">全</span><div><strong>全部账户</strong><small>2 个实盘账户</small></div><b>100%</b></button><button class="account-item"><span class="account-icon coral">招</span><div><strong>招商证券</strong><small>人民币账户</small></div><b>68.4%</b></button><button class="account-item"><span class="account-icon blue">港</span><div><strong>港美股账户</strong><small>统一折算人民币</small></div><b>31.6%</b></button><div class="cash-row"><span>可用现金</span><strong>¥ 200,222.12</strong></div><div class="simulation-label">模拟盘 · 独立统计</div><button class="account-item"><span class="account-icon violet">模</span><div><strong>高股息模拟盘</strong><small>初始资金 ¥ 500,000</small></div><b class="up">+8.26%</b></button><button class="button full ghost"><i data-icon="settings"></i>管理账户</button></aside>
+          </div>
+          <article class="panel positions-panel"><div class="panel-head"><div class="inline-tabs large"><button class="active">持仓明细 <span>7</span></button><button>收益来源</button><button>已清仓</button><button>交易记录</button></div><button class="text-button">成本口径：移动加权<i data-icon="chevron-down"></i></button></div><table class="data-table positions-table"><thead><tr><th>股票</th><th class="num">持股数量</th><th class="num">成本价</th><th class="num">现价</th><th class="num">持仓市值</th><th class="num">仓位占比</th><th class="num">浮动盈亏</th><th class="num">持仓收益率</th><th class="num">已实现盈亏</th><th class="num">持有天数</th></tr></thead><tbody>
+            <tr><td><strong>新易盛</strong><small>300502 · SZ</small></td><td class="num">1,200</td><td class="num">¥ 309.87</td><td class="num">¥ 386.20</td><td class="num">¥ 463,440.00</td><td class="num">36.02%</td><td class="num up">+¥ 91,596.00</td><td class="num up strong">+24.63%</td><td class="num">¥ 0.00</td><td class="num">126 天</td></tr>
+            <tr><td><strong>中际旭创</strong><small>300308 · SZ</small></td><td class="num">800</td><td class="num">¥ 252.52</td><td class="num">¥ 298.66</td><td class="num">¥ 238,928.00</td><td class="num">18.57%</td><td class="num up">+¥ 36,912.00</td><td class="num up strong">+18.27%</td><td class="num up">+¥ 8,620.00</td><td class="num">98 天</td></tr>
+            <tr><td><strong>招商银行</strong><small>600036 · SH</small></td><td class="num">4,000</td><td class="num">¥ 37.60</td><td class="num">¥ 42.18</td><td class="num">¥ 168,720.00</td><td class="num">13.11%</td><td class="num up">+¥ 18,320.00</td><td class="num up strong">+12.18%</td><td class="num up">+¥ 3,286.00</td><td class="num">218 天</td></tr>
+            <tr><td><strong>腾讯控股</strong><small>00700 · HK</small></td><td class="num">300</td><td class="num">HK$ 560.00</td><td class="num">HK$ 612.00</td><td class="num">¥ 168,420.00</td><td class="num">13.09%</td><td class="num up">+¥ 14,310.00</td><td class="num up strong">+9.28%</td><td class="num">¥ 0.00</td><td class="num">82 天</td></tr>
+          </tbody></table></article>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <div class="modal-backdrop" id="search-modal" hidden>
+    <div class="command-modal"><div class="command-input"><i data-icon="search"></i><input id="command-input" placeholder="输入代码、名称、拼音首字母或研究关键词" autofocus/><kbd>ESC</kbd></div><div class="command-body"><div class="command-label">最近查看</div><button data-command-stock="新易盛"><span class="command-symbol">新</span><div><strong>新易盛</strong><small>300502 · SZ</small></div><span class="up">+8.42%</span><kbd>↵</kbd></button><button data-command-stock="中际旭创"><span class="command-symbol">中</span><div><strong>中际旭创</strong><small>300308 · SZ</small></div><span class="up">+6.18%</span></button><button data-command-stock="腾讯控股"><span class="command-symbol">腾</span><div><strong>腾讯控股</strong><small>00700 · HK</small></div><span class="down">−1.12%</span></button><div class="command-label">研究笔记</div><button data-nav="research"><span class="command-symbol note"><i data-icon="book"></i></span><div><strong>新易盛 · 研究档案</strong><small>高速光模块产品竞争力明确…</small></div><span class="research-state done">已完成</span></button></div><div class="command-footer"><span><kbd>↑</kbd><kbd>↓</kbd> 选择</span><span><kbd>↵</kbd> 打开</span><span>可搜索股票、ETF、指数、板块和研究</span></div></div>
+  </div>
+
+  <div class="modal-backdrop" id="condition-modal" hidden>
+    <div class="dialog condition-dialog"><div class="dialog-head"><div><span class="ai-icon small"><i data-icon="sparkles"></i></span><h2>确认 AI 解析的条件</h2></div><button class="icon-button" data-close-modal><i data-icon="x"></i></button></div><p class="dialog-description">以下条件尚未执行。请确认或修改；AI 不会评价公司或推荐股票。</p><div class="parsed-conditions"><div><span>股息率（TTM）</span><strong>大于或等于 4.0%</strong><em>已识别</em></div><div><span>总市值</span><strong>大于 500 亿元</strong><em>已识别</em></div><div><span>申万行业 · 属于</span><strong>银行 或 公用事业</strong><em>已识别</em></div><div><span>申万行业 · 不属于</span><strong>房地产</strong><em>已识别</em></div><div><span>ROE（2025 年报）</span><strong>大于或等于 10.0%</strong><em>已识别</em></div><div><span>其他</span><strong>排除 ST（默认）</strong><em class="default-tag">默认条件</em></div></div><div class="privacy-note"><i data-icon="lock"></i>本次仅发送条件描述与可用条件清单，不发送持仓、自选和研究笔记。</div><div class="dialog-actions"><button class="button ghost" data-close-modal>返回修改</button><button class="button primary" id="confirm-conditions"><i data-icon="play"></i>确认并运行</button></div></div>
+  </div>
+
+  <div class="modal-backdrop" id="trade-modal" hidden>
+    <div class="dialog trade-dialog"><div class="dialog-head"><div><h2>记一笔</h2><p>修改后持仓与收益将自动重算</p></div><button class="icon-button" data-close-modal><i data-icon="x"></i></button></div><div class="segmented trade-types"><button class="active">买入</button><button>卖出</button><button>资金转入</button><button>资金转出</button><button>换汇</button></div><div class="form-grid"><label>账户<select><option>招商证券</option><option>港美股账户</option></select></label><label>日期时间<input value="2026/11/10 10:32"/></label><label class="full">股票<div class="inner-search"><i data-icon="search"></i><input value="新易盛 · 300502.SZ"/></div></label><label>数量<input value="100"/></label><label>成交价<input value="386.20 CNY"/></label><label>费用<input value="15.46 CNY"/></label><label>备注<input placeholder="可选"/></label></div><div class="dialog-actions"><button class="button ghost" data-close-modal>取消</button><button class="button primary" id="save-trade">保存记录</button></div></div>
+  </div>
+
+  <div class="drawer-backdrop" id="sector-drawer" hidden><aside class="sector-detail-drawer"><div class="drawer-head"><div><span class="board-type concept">概</span><h2 id="drawer-sector-name">CPO</h2><span class="soft-badge">同花顺概念</span></div><button class="icon-button" id="close-sector"><i data-icon="x"></i></button></div><div class="sector-quote"><strong class="up">+3.86%</strong><span>成交额 <b>486.2 亿</b></span><span>较昨日 <b class="up">+28.4%</b></span><span><b class="up">28 涨</b> / <b class="down">4 跌</b></span></div><div class="chart-toolbar"><div class="timeframes"><button>分时</button><button class="active">日K</button><button>周K</button><button>月K</button></div><button class="button compact ghost">前复权<i data-icon="chevron-down"></i></button></div><div class="candle-chart sector-candle" id="sector-candle-chart"></div><div class="drawer-section-head"><h3>成分股</h3><button class="button compact primary">进入板块筛选</button></div><table class="data-table"><thead><tr><th>股票</th><th class="num">最新价</th><th class="num">今日</th><th class="num">成交额</th><th>研究</th></tr></thead><tbody><tr><td><strong>新易盛</strong><small>300502</small></td><td class="num">¥ 386.20</td><td class="num up">+8.42%</td><td class="num">86.2 亿</td><td><span class="research-state done">已完成</span></td></tr><tr><td><strong>中际旭创</strong><small>300308</small></td><td class="num">¥ 298.66</td><td class="num up">+6.18%</td><td class="num">72.8 亿</td><td><span class="research-state done">已完成</span></td></tr><tr><td><strong>天孚通信</strong><small>300394</small></td><td class="num">¥ 168.32</td><td class="num up">+4.26%</td><td class="num">38.6 亿</td><td><span class="research-state doing">待研究</span></td></tr></tbody></table><div class="related-etf"><h3>相关 ETF</h3><span>通信 ETF <b class="up">+2.16%</b></span><span>5G 通信 ETF <b class="up">+1.82%</b></span></div></aside></div>
+  <div class="toast" id="toast"><i data-icon="check"></i><span>已完成</span></div>
+  <script src="./app.js"></script>
+  <script src="./enhanced.js"></script>
+  <script src="./markdown-editor.js"></script>
+  <script src="./home-indices.js"></script>
+  <script src="./sectors-page.js"></script>
+  <script src="./watchlist-layout.js"></script>
+  <script src="./stock-tags.js"></script>
+  <script src="./account-management.js"></script>
+</body>
+</html>

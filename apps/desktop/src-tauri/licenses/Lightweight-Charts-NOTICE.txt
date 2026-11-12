@@ -1,0 +1,8 @@
+TradingView Lightweight Charts™
+Copyright (c) 2025 TradingView, Inc.
+https://www.tradingview.com/
+
+Bundled component: lightweight-charts 5.2.0
+License: Apache License, Version 2.0.
+See Lightweight-Charts-LICENSE.txt for the complete license text.
+The application settings also provide the attribution and links required by the library.
