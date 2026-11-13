@@ -1,5 +1,7 @@
+import { useEffect } from 'react';
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import { AppProviders } from './providers/AppProviders';
+import { prefetchApi } from '@/lib/useApi';
 import { AppShell } from '@/components/layout/AppShell';
 import { AppErrorBoundary } from '@/components/layout/AppErrorBoundary';
 import { DashboardPage } from '@/features/market/pages/DashboardPage';
@@ -11,6 +13,9 @@ import { AccountsPage } from '@/features/accounts/pages/AccountsPage';
 import { AccountManagerPage } from '@/features/accounts/pages/AccountManagerPage';
 
 export default function App() {
+  useEffect(() => {
+    prefetchApi(['/watchlist', '/research', '/accounts', '/market/dashboard', '/market/sectors']);
+  }, []);
   return <AppProviders><BrowserRouter><Routes>
     <Route element={<AppErrorBoundary><AppShell /></AppErrorBoundary>}>
       <Route index element={<Navigate to="/dashboard" replace />} />

@@ -259,6 +259,24 @@ class MarketStore:
             """, params).fetchall()
         return [dict(row) for row in rows]
 
+    def close_series(self, instrument_ids, limit=14):
+        series = {item: [] for item in instrument_ids}
+        for start in range(0, len(instrument_ids), 500):
+            batch = instrument_ids[start:start + 500]
+            placeholders = ",".join("?" for _ in batch)
+            with self.connect() as connection:
+                rows = connection.execute(f"""
+                    SELECT instrument_id, close FROM (
+                        SELECT instrument_id, close,
+                            ROW_NUMBER() OVER (PARTITION BY instrument_id ORDER BY time DESC) AS position
+                        FROM candles
+                        WHERE period='day' AND adjustment='none' AND instrument_id IN ({placeholders})
+                    ) WHERE position <= ?
+                """, [*batch, limit]).fetchall()
+            for row in rows:
+                series[row["instrument_id"]].append(row["close"])
+        return {item: list(reversed(values)) for item, values in series.items()}
+
     def ingestion(self, instrument_id, period, adjustment="none"):
         with self.connect() as connection:
             row = connection.execute("""

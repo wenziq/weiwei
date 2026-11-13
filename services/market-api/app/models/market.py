@@ -95,6 +95,7 @@ class Instrument(CamelModel):
 class WatchlistData(CamelModel):
     stocks: List[Instrument]
     tags: List[str]
+    quotes_refreshing: bool = False
 
 
 class TagUpdate(CamelModel):

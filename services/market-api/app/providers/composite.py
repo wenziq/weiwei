@@ -33,6 +33,9 @@ class CompositeMarketDataProvider:
         self.index_quote_cache = {}
         self.index_quote_failures = {}
         self.snapshot_lock = threading.Lock()
+        self.quote_refresh_lock = threading.Lock()
+        self.quote_refreshing_ids = set()
+        self.quote_refresh_at = {}
         self.dashboard_refreshing = False
         self.sectors_refreshing = False
         self.last_dashboard_refresh = 0
@@ -69,6 +72,41 @@ class CompositeMarketDataProvider:
     def instruments(self):
         return [self.with_research_metadata(item) for item in self.catalog.instruments()]
 
+    def _refresh_quotes(self, ids):
+        try:
+            self.store.save_quotes(self.tencent.quote_many(ids))
+        except (OSError, ValueError, RuntimeError) as error:
+            logger.warning("腾讯批量报价失败，使用Yahoo或已有快照: %s", error)
+            with ThreadPoolExecutor(max_workers=4) as executor:
+                def yahoo_quote(instrument_id):
+                    if instrument_id.startswith("bj-"):
+                        return None
+                    try:
+                        return self.yahoo.quote(instrument_id)
+                    except (OSError, ValueError, KeyError) as quote_error:
+                        logger.warning("Yahoo报价失败 %s: %s", instrument_id, quote_error)
+                        return None
+                quotes = list(executor.map(yahoo_quote, ids))
+                self.store.save_quotes([quote for quote in quotes if quote])
+        finally:
+            with self.quote_refresh_lock:
+                self.quote_refreshing_ids.difference_update(ids)
+
+    def refresh_quotes_async(self, instrument_ids):
+        now = time.time()
+        with self.quote_refresh_lock:
+            ids = [item for item in dict.fromkeys(instrument_ids) if item not in self.quote_refreshing_ids and now - self.quote_refresh_at.get(item, 0) >= 15]
+            if not ids:
+                return
+            self.quote_refreshing_ids.update(ids)
+            for item in ids:
+                self.quote_refresh_at[item] = now
+        threading.Thread(target=self._refresh_quotes, args=(ids,), name="weiwei-quotes-refresh", daemon=True).start()
+
+    def quotes_refreshing(self, instrument_ids):
+        with self.quote_refresh_lock:
+            return bool(self.quote_refreshing_ids.intersection(instrument_ids))
+
     def get_instruments(self, instrument_ids):
         ids = list(dict.fromkeys(instrument_ids))
         items = {item["id"]: item for item in self.store.instruments(ids)}
@@ -89,29 +127,15 @@ class CompositeMarketDataProvider:
                     self.store.save_instruments([item])
                 except (OSError, ValueError) as error:
                     logger.warning("北交所代码显示映射暂不可用 %s: %s", item["id"], error)
-        try:
-            self.store.save_quotes(self.tencent.quote_many(items))
-        except (OSError, ValueError, RuntimeError) as error:
-            logger.warning("腾讯批量报价失败，使用Yahoo或本机快照: %s", error)
-            with ThreadPoolExecutor(max_workers=4) as executor:
-                def yahoo_quote(instrument_id):
-                    if instrument_id.startswith("bj-"):
-                        return None
-                    try:
-                        return self.yahoo.quote(instrument_id)
-                    except (OSError, ValueError, KeyError) as quote_error:
-                        logger.warning("Yahoo报价失败 %s: %s", instrument_id, quote_error)
-                        return None
-                quotes = list(executor.map(yahoo_quote, items))
-                self.store.save_quotes([quote for quote in quotes if quote])
+        self.refresh_quotes_async(items)
+        sparklines = self.store.close_series(ids, 14)
+        research_status = {document["instrumentId"]: document["status"] for document in self.research_documents()}
         result = []
-        for instrument_id in ids:
-            item = self.store.instruments([instrument_id])
-            if not item:
-                continue
-            item = item[0]
-            item["spark"] = [candle["close"] for candle in self.store.candles(instrument_id, "day", 14)]
-            result.append(self.with_research_metadata(item))
+        for item in self.store.instruments(ids):
+            item["spark"] = sparklines.get(item["id"], [])
+            if item["id"] in research_status:
+                item["status"] = research_status[item["id"]]
+            result.append(item)
         return result
 
     def get_instrument(self, instrument_id):

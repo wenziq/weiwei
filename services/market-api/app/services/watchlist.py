@@ -23,7 +23,8 @@ class WatchlistService:
 
     def list(self, query: Optional[str], tags: Optional[str], tag_mode: str) -> Dict:
         document = self.store.read("watchlist")
-        stocks = [self.with_user_tags(item, document) for item in self.provider.get_instruments(self.all_ids_from(document))]
+        ids = self.all_ids_from(document)
+        stocks = [self.with_user_tags(item, document) for item in self.provider.get_instruments(ids)]
         all_tags = sorted({tag for stock in stocks for tag in stock["tags"]})
         if query:
             normalized = query.lower()
@@ -34,7 +35,7 @@ class WatchlistService:
                 own = set(item["tags"])
                 return selected_tags.issubset(own) if tag_mode == "all" else bool(selected_tags.intersection(own))
             stocks = [item for item in stocks if matches(item)]
-        return {"stocks": stocks, "tags": all_tags}
+        return {"stocks": stocks, "tags": all_tags, "quotesRefreshing": self.provider.quotes_refreshing(ids)}
 
     def set_tags(self, instrument_id: str, tags: List[str]) -> Dict:
         instrument = self.provider.get_instrument(instrument_id)

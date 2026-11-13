@@ -27,19 +27,27 @@ export function WatchlistPage() {
   const [editingStock, setEditingStock] = useState<Instrument | null>(null);
   const [addOpen, setAddOpen] = useState(false);
   useEffect(() => { setTagFilters(activeTag ? [activeTag] : []); }, [activeTag]);
-  const path = `/watchlist?query=${encodeURIComponent(debouncedQuery)}&tags=${encodeURIComponent(tagFilters.join(','))}&tag_mode=${tagMode}`;
-  const { data, dataPath, loading, error, warning, refresh } = useApi<WatchlistData>(path, [path], { refetchIntervalMs: 15000 });
+  const path = !debouncedQuery && !tagFilters.length ? '/watchlist' : `/watchlist?query=${encodeURIComponent(debouncedQuery)}&tags=${encodeURIComponent(tagFilters.join(','))}&tag_mode=${tagMode}`;
+  const { data, dataPath, loading, error, warning, updatedAt, refresh } = useApi<WatchlistData>(path, [path], { refetchIntervalMs: 15000 });
   const { data: allStocks, refresh: refreshAllStocks } = useApi<WatchlistData>('/watchlist');
   const { data: research } = useApi<ResearchDocument[]>('/research');
   const navigate = useNavigate();
+  useEffect(() => {
+    if (!data?.quotesRefreshing) return;
+    const timer = window.setTimeout(refresh, 600);
+    return () => window.clearTimeout(timer);
+  }, [data?.quotesRefreshing, updatedAt, refresh]);
   const stocks = useMemo(() => {
-    const result = [...(data?.stocks ?? [])];
+    const source = dataPath === path ? data?.stocks ?? [] : allStocks?.stocks ?? [];
+    const keyword = debouncedQuery.trim().toLowerCase();
+    const selectedTags = new Set(tagFilters);
+    const result = source.filter(item => (!keyword || `${item.name}${item.code}`.toLowerCase().includes(keyword)) && (!selectedTags.size || (tagMode === 'all' ? [...selectedTags].every(tag => item.tags.includes(tag)) : item.tags.some(tag => selectedTags.has(tag)))));
     if (sort === 'changePct') result.sort((a, b) => (b.changePct ?? -Infinity) - (a.changePct ?? -Infinity));
     if (sort === 'amount') result.sort((a, b) => (b.amount ?? -1) - (a.amount ?? -1));
     if (sort === 'sincePct') result.sort((a, b) => b.sincePct - a.sincePct);
     if (sort === 'turnover') result.sort((a, b) => (b.turnover ?? -1) - (a.turnover ?? -1));
     return result;
-  }, [data, sort]);
+  }, [data, allStocks, dataPath, path, debouncedQuery, tagFilters, tagMode, sort]);
   const selected = stocks.find(item => item.id === selectedId) ?? stocks[0];
   const selectStock = (id: string, replace = false) => {
     const next = new URLSearchParams(searchParams);

@@ -79,7 +79,7 @@ export interface Instrument extends DataProvenance {
   financialSource: string | null;
   financialReport: string | null;
 }
-export interface WatchlistData { stocks: Instrument[]; tags: string[] }
+export interface WatchlistData { stocks: Instrument[]; tags: string[]; quotesRefreshing: boolean }
 export interface TagUpdate { tags: string[] }
 export interface Candle {
   time: number;

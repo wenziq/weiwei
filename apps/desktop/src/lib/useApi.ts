@@ -1,18 +1,46 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { api } from './api';
 
+interface CachedResponse { data: unknown; updatedAt: number }
+const responseCache = new Map<string, CachedResponse>();
+const pendingRequests = new Map<string, Promise<unknown>>();
+
+function cachedResponse<T>(path: string | null) {
+  return (path ? responseCache.get(path) : undefined) as { data: T; updatedAt: number } | undefined;
+}
+
+function loadResponse<T>(path: string): Promise<T> {
+  const pending = pendingRequests.get(path) as Promise<T> | undefined;
+  if (pending) return pending;
+  const request = api.get<T>(path).then(result => {
+    responseCache.set(path, { data: result, updatedAt: Date.now() });
+    return result;
+  }).finally(() => {
+    if (pendingRequests.get(path) === request) pendingRequests.delete(path);
+  });
+  pendingRequests.set(path, request);
+  return request;
+}
+
+export function prefetchApi(paths: string[]) {
+  for (const path of paths) {
+    if (!responseCache.has(path)) void loadResponse(path).catch(() => undefined);
+  }
+}
+
 export function useApi<T>(path: string | null, dependencies: readonly unknown[] = [], options: { refetchIntervalMs?: number; keepPreviousData?: boolean; mergeData?: (incoming: T, current: T | null) => T } = {}) {
-  const [data, setData] = useState<T | null>(null);
-  const [dataPath, setDataPath] = useState<string | null>(null);
-  const [loading, setLoading] = useState(Boolean(path));
+  const cached = cachedResponse<T>(path);
+  const [data, setData] = useState<T | null>(() => cached?.data ?? null);
+  const [dataPath, setDataPath] = useState<string | null>(() => cached ? path : null);
+  const [loading, setLoading] = useState(Boolean(path) && !cached);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [warning, setWarning] = useState<string | null>(null);
-  const [updatedAt, setUpdatedAt] = useState<number | null>(null);
+  const [updatedAt, setUpdatedAt] = useState<number | null>(() => cached?.updatedAt ?? null);
   const [version, setVersion] = useState(0);
-  const hasData = useRef(false);
+  const hasData = useRef(Boolean(cached));
   const inFlight = useRef(false);
-  const previousPath = useRef<string | null>(null);
+  const previousPath = useRef<string | null>(path);
   const refresh = useCallback(() => setVersion(value => value + 1), []);
 
   useEffect(() => {
@@ -29,7 +57,13 @@ export function useApi<T>(path: string | null, dependencies: readonly unknown[] 
     }
     if (previousPath.current !== path) {
       previousPath.current = path;
-      if (!options.keepPreviousData) {
+      const cached = cachedResponse<T>(path);
+      if (cached) {
+        hasData.current = true;
+        setData(cached.data);
+        setDataPath(path);
+        setUpdatedAt(cached.updatedAt);
+      } else if (!options.keepPreviousData) {
         hasData.current = false;
         setData(null);
       }
@@ -39,7 +73,7 @@ export function useApi<T>(path: string | null, dependencies: readonly unknown[] 
     setLoading(!hasData.current);
     setRefreshing(hasData.current);
     setError(null);
-    api.get<T>(path, controller.signal)
+    loadResponse<T>(path)
       .then(result => {
         if (controller.signal.aborted) return;
         inFlight.current = false;
@@ -52,7 +86,7 @@ export function useApi<T>(path: string | null, dependencies: readonly unknown[] 
         setWarning(null);
       })
       .catch((reason: unknown) => {
-        if (reason instanceof DOMException && reason.name === 'AbortError') return;
+        if (controller.signal.aborted) return;
         inFlight.current = false;
         const message = reason instanceof Error ? reason.message : '加载失败';
         if (hasData.current) setWarning(message);
@@ -62,6 +96,10 @@ export function useApi<T>(path: string | null, dependencies: readonly unknown[] 
       });
     return () => { inFlight.current = false; controller.abort(); };
   }, [path, version, ...dependencies]);
+
+  useEffect(() => {
+    if (data !== null && dataPath && updatedAt) responseCache.set(dataPath, { data, updatedAt });
+  }, [data, dataPath, updatedAt]);
 
   useEffect(() => {
     if (!path || !options.refetchIntervalMs) return;
