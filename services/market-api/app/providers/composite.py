@@ -5,12 +5,10 @@ import time
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timezone
 
-from ..core.config import settings
 from ..repositories.market_store import MarketStore
 from .catalog import CatalogProvider
 from .errors import NoMarketData
-from .demo import DemoMarketDataProvider
-from .indices import INDEX_SYMBOLS, IndexProvider
+from .indices import INDEX_METADATA, INDEX_SYMBOLS, IndexProvider
 from .sectors import SectorProvider
 from .tencent import HK_NAMES, US_NAMES, TencentProvider
 from .yahoo import YahooProvider
@@ -22,7 +20,6 @@ class CompositeMarketDataProvider:
     name = "东方财富 / 新浪 / 腾讯 / Yahoo"
 
     def __init__(self, data_dir):
-        self.demo = DemoMarketDataProvider()
         self.store = MarketStore(data_dir)
         aliases = {f"hk-{code}": name for code, name in HK_NAMES.items()} | {f"us-{code.lower()}": name for code, name in US_NAMES.items()}
         self.catalog = CatalogProvider(data_dir, self.store, aliases)
@@ -62,22 +59,15 @@ class CompositeMarketDataProvider:
                 "marketState": "本机最近收盘",
             })
 
-    def with_research_metadata(self, item, fundamentals):
+    def with_research_metadata(self, item):
         result = dict(item)
-        base = fundamentals.get(item["id"])
-        if base:
-            for key in ["status", "tags"]:
-                result[key] = base[key]
-            if item.get("industry") in {None, "", "未分类"}:
-                result["industry"] = base["industry"]
         document = next((item for item in self.research_documents() if item["instrumentId"] == result["id"]), None)
         if document:
             result["status"] = document["status"]
         return result
 
     def instruments(self):
-        fundamentals = {item["id"]: item for item in self.demo.instruments()}
-        return [self.with_research_metadata(item, fundamentals) for item in self.catalog.instruments()]
+        return [self.with_research_metadata(item) for item in self.catalog.instruments()]
 
     def get_instruments(self, instrument_ids):
         ids = list(dict.fromkeys(instrument_ids))
@@ -114,7 +104,6 @@ class CompositeMarketDataProvider:
                         return None
                 quotes = list(executor.map(yahoo_quote, items))
                 self.store.save_quotes([quote for quote in quotes if quote])
-        fundamentals = {item["id"]: item for item in self.demo.instruments()}
         result = []
         for instrument_id in ids:
             item = self.store.instruments([instrument_id])
@@ -122,24 +111,16 @@ class CompositeMarketDataProvider:
                 continue
             item = item[0]
             item["spark"] = [candle["close"] for candle in self.store.candles(instrument_id, "day", 14)]
-            result.append(self.with_research_metadata(item, fundamentals))
+            result.append(self.with_research_metadata(item))
         return result
 
     def get_instrument(self, instrument_id):
-        item = next(iter(self.get_instruments([instrument_id])), None)
-        if item:
-            return item
-        fallback = next((item for item in self.demo.instruments() if item["id"] == instrument_id), None)
-        if fallback and settings.allow_demo_fallback:
-            return {**fallback, "dataSource": "离线演示", "dataStatus": "demo", "quoteTime": None}
-        return None
+        return next(iter(self.get_instruments([instrument_id])), None)
 
     def catalog_search(self, query, limit=30, market=None):
         if not query.strip() and self.priority_ids():
             return self.get_instruments(self.priority_ids())[:limit]
-        results = self.catalog.search(query, limit, market)
-        fundamentals = {item["id"]: item for item in self.demo.instruments()}
-        return [self.with_research_metadata(item, fundamentals) for item in results]
+        return [self.with_research_metadata(item) for item in self.catalog.search(query, limit, market)]
 
     def resolve_instrument(self, value):
         normalized = value.strip().lower()
@@ -211,7 +192,7 @@ class CompositeMarketDataProvider:
                 turnover_cached = True
                 turnover = self.indices.turnover_cache or {"total": None, "deltaPct": None, "today": [], "previous": []}
         indices = []
-        for base in self.demo.indices():
+        for base in INDEX_METADATA:
             quote = quotes.get(base["id"], {})
             indices.append({
                 "id": base["id"], "name": base["name"], "code": base["code"], "group": base["group"],
@@ -314,24 +295,20 @@ class CompositeMarketDataProvider:
                 raise
             sectors = [{**item, "dataStatus": "cached"} for item in self.sector_provider.cache]
         def with_spark(item):
-            if item.get("spark") or not item["id"].startswith("sector-ths."):
+            candles = self.store.candles(item["id"], "day", 14)
+            if not candles:
                 return item
-            try:
-                candles = self.candles(item["id"], "day", 30)["candles"]
-                result = {**item, "spark": [candle["close"] for candle in candles[-14:]]}
-                amounts = [candle.get("amount") for candle in candles[-2:]]
-                if len(amounts) == 2 and all(amount is not None and amount > 0 for amount in amounts):
-                    result["amount"] = amounts[-1] / 1e8
-                    result["deltaPct"] = (amounts[-1] - amounts[0]) / amounts[0] * 100
-                return result
-            except (OSError, ValueError, RuntimeError):
-                return {**item, "spark": [candle["close"] for candle in self.store.candles(item["id"], "day", 14)]}
+            result = {**item, "spark": [candle["close"] for candle in candles]}
+            amounts = [candle.get("amount") for candle in candles[-2:]]
+            if len(amounts) == 2 and all(amount is not None and amount > 0 for amount in amounts):
+                result["amount"] = amounts[-1] / 1e8
+                result["deltaPct"] = (amounts[-1] - amounts[0]) / amounts[0] * 100
+            return result
         with ThreadPoolExecutor(max_workers=4) as executor:
-            enriched = list(executor.map(with_spark, sectors[:12]))
-        return enriched + sectors[12:]
+            return list(executor.map(with_spark, sectors))
 
     def fetch_candles(self, instrument_id, period="day", limit=500, start=None, end=None, adjustment="none"):
-        if not re.fullmatch(r"(?:sh|sz|bj|hk|us|index|sector)-[\w.-]+", instrument_id):
+        if not re.fullmatch(r"(?:sh|sz|bj|hk|us|index|sector|fx)-[\w.-]+", instrument_id):
             raise ValueError("证券代码格式不正确")
         if instrument_id.startswith("index-"):
             if instrument_id not in INDEX_SYMBOLS:
@@ -378,7 +355,9 @@ class CompositeMarketDataProvider:
                     return cached[1], cached[2], True
                 raise
         if instrument_id.startswith("sector-"):
-            return self.sector_provider.candles(instrument_id, period, limit, start, end, adjustment), "同花顺板块", True
+            candles = self.sector_provider.candles(instrument_id, period, limit, start, end, adjustment)
+            source = "同花顺板块" if instrument_id.startswith("sector-ths.") else "当前成分等权回溯"
+            return candles, source, True
         providers = [self.eastmoney, self.yahoo] if instrument_id.startswith(("sh-", "sz-", "bj-")) else [self.yahoo, self.tencent]
         errors = []
         for provider in providers:
@@ -395,11 +374,4 @@ class CompositeMarketDataProvider:
         raise RuntimeError("；".join(f"{name}: {error}" for name, error in errors))
 
     def candles(self, instrument_id, period="day", limit=500, adjustment="none", before=None):
-        result = self.candle_service.get(instrument_id, period, limit, adjustment, before)
-        if result["candles"] or not settings.allow_demo_fallback or instrument_id.startswith("sector-"):
-            return result
-        try:
-            candles = self.demo.candles(instrument_id, period)
-        except KeyError:
-            return result
-        return {**result, "source": "离线演示", "status": "demo", "servedBy": "demo", "refreshing": False, "partial": False, "message": "当前为离线演示数据", "candles": candles}
+        return self.candle_service.get(instrument_id, period, limit, adjustment, before)

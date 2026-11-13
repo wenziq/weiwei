@@ -46,7 +46,7 @@ def history_status():
 
 @router.post("/history/start", response_model=HistoryStatus)
 def history_start(request: Optional[HistoryRequest] = None):
-    if not history_collector.start(request.markets if request else None, request.priority_only if request else False):
+    if not history_collector.start(request.markets if request else None, request.priority_only if request else False, request.resume if request else True):
         raise HTTPException(status_code=409, detail="历史采集正在运行，请先暂停当前任务")
     return history_collector.status()
 

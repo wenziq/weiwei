@@ -1,33 +1,32 @@
 import { useEffect, useState } from 'react';
-import { NavLink, Outlet, useNavigate } from 'react-router-dom';
-import { LayoutDashboard, Layers3, Star, BookOpen, Filter, Wallet, Search, Sun, Moon, Database, Settings, FolderCog } from 'lucide-react';
+import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom';
+import { LayoutDashboard, Layers3, Star, BookOpen, Filter, Wallet, Search, Sun, Moon, Settings, Tag } from 'lucide-react';
 import { useApp } from '@/app/providers/AppProviders';
 import { useApi } from '@/lib/useApi';
 import type { ApiHealth, WatchlistData } from '@weiwei/contracts';
 import { marketSession } from '@/lib/marketHours';
-import { env } from '@/config/env';
 import { SearchPalette } from './SearchPalette';
 import { PreferencesModal } from './PreferencesModal';
 
 const navigation = [
   { path: '/dashboard', label: '看盘台', icon: LayoutDashboard, key: '1' },
   { path: '/sectors', label: '板块行情', icon: Layers3, key: '6' },
-  { path: '/watchlist', label: '自选与持仓', icon: Star, key: '2' },
+  { path: '/watchlist', label: '自选', icon: Star, key: '2' },
   { path: '/research', label: '研究库', icon: BookOpen, key: '3' },
   { path: '/screener', label: '条件选股', icon: Filter, key: '4' },
   { path: '/accounts', label: '账户收益', icon: Wallet, key: '5' },
 ];
-const groups = ['全部账户 · 持仓', '观察', 'CPO 产业链', '高股息'];
 
 export function AppShell() {
   const { theme, toggleTheme } = useApp();
   const navigate = useNavigate();
+  const location = useLocation();
   const [searchOpen, setSearchOpen] = useState(false);
   const [preferencesOpen, setPreferencesOpen] = useState(false);
   const [preferencesSection, setPreferencesSection] = useState<'display' | 'connections'>('display');
   const [now, setNow] = useState(() => new Date());
   const { data: health, error: healthError } = useApi<ApiHealth>('/health', [], { refetchIntervalMs: 30000 });
-  const { data: groupData, refresh: refreshGroups } = useApi<WatchlistData>('/watchlist?group=观察');
+  const { data: watchlist, refresh: refreshTags } = useApi<WatchlistData>('/watchlist');
   useEffect(() => {
     const handler = (event: KeyboardEvent) => {
       if (document.querySelector('[aria-modal="true"]') || document.querySelector('.markdown-studio')) return;
@@ -40,34 +39,37 @@ export function AppShell() {
   }, [navigate]);
   useEffect(() => {
     const timer = window.setInterval(() => setNow(new Date()), 1000);
-    const changed = () => refreshGroups();
+    const changed = () => refreshTags();
     const openSettings = (event: Event) => {
       setPreferencesSection(event instanceof CustomEvent && event.detail === 'connections' ? 'connections' : 'display');
       setPreferencesOpen(true);
     };
-    window.addEventListener('weiwei-groups-changed', changed);
+    window.addEventListener('weiwei-tags-changed', changed);
     window.addEventListener('weiwei-open-settings', openSettings);
     return () => {
       window.clearInterval(timer);
-      window.removeEventListener('weiwei-groups-changed', changed);
+      window.removeEventListener('weiwei-tags-changed', changed);
       window.removeEventListener('weiwei-open-settings', openSettings);
     };
-  }, [refreshGroups]);
+  }, [refreshTags]);
   const markets = [{ key: 'CN' as const, label: 'A 股' }, { key: 'HK' as const, label: '港股' }, { key: 'US' as const, label: '美股' }];
-  const availableGroups = (groupData?.groups.map(group => group.name) ?? groups).filter(name => !['已研究', '今日放量'].includes(name));
+  const activeTag = location.pathname === '/watchlist' ? new URLSearchParams(location.search).get('tag') : null;
+  const tagCounts = new Map<string, number>();
+  for (const stock of watchlist?.stocks ?? []) for (const tag of stock.tags) tagCounts.set(tag, (tagCounts.get(tag) ?? 0) + 1);
+  const tags = watchlist?.tags ?? [];
 
   return <div className="app-shell">
     <aside className="sidebar">
       <div className="brand"><div className="brand-mark"><i /><i /><i /></div><div><div className="brand-name">危微</div><div className="brand-sub">个人看盘</div></div></div>
       <nav className="main-nav" aria-label="主导航">
-        {navigation.map(({ path, label, icon: Icon, key }) => <NavLink key={path} to={path} className={({ isActive }) => `nav-item${isActive ? ' active' : ''}`}><Icon size={16} /><span>{label}</span><kbd>{key}</kbd></NavLink>)}
+        {navigation.map(({ path, label, icon: Icon }) => <NavLink key={path} to={path} className={({ isActive }) => `nav-item${isActive ? ' active' : ''}`}><Icon size={16} /><span>{label}</span></NavLink>)}
       </nav>
-      <div className="sidebar-section"><div className="sidebar-label sidebar-group-title">自选分组<button className="icon-button" title="管理自选分组" aria-label="管理自选分组" onClick={() => navigate('/watchlist?manageGroups=1')}><FolderCog size={13} /></button></div>
-        {availableGroups.map((group, index) => <button className="side-link" key={group} onClick={() => navigate(`/watchlist?group=${encodeURIComponent(group)}`)}><span className={`group-dot color-${index}`} /><span>{group}</span></button>)}
-
+      <div className="sidebar-section"><div className="sidebar-label sidebar-tags-title"><Tag size={13} />标签<span>{tags.length}</span></div>
+        <div className="sidebar-tag-list">{tags.map(tag => <button className={`side-link${activeTag === tag ? ' active' : ''}`} key={tag} aria-pressed={activeTag === tag} title={`按 ${tag} 筛选自选股`} onClick={() => navigate(activeTag === tag ? '/watchlist' : `/watchlist?tag=${encodeURIComponent(tag)}`)}><span className="tag-symbol">#</span><span>{tag}</span><small>{tagCounts.get(tag) ?? 0}</small></button>)}</div>
+        {!tags.length && <p className="sidebar-tags-empty">添加股票并设置标签后，在这里快速筛选。</p>}
       </div>
       <div className="sidebar-bottom">
-        <button className="data-health" onClick={() => setPreferencesOpen(true)} title="查看行情与历史采集"><span className="health-icon"><Database size={15} /></span><span><strong>{health ? '真实行情已连接' : healthError ? '行情服务未连接' : '正在连接行情服务'}</strong><small>{health ? `${health.demoFallback ? '演示回退已开启' : '演示回退关闭'} · 本机持久化` : env.apiBaseUrl.replace(/^https?:\/\//, '')}</small></span><span className={`status-dot${health ? '' : ' muted'}`} /></button>
+        <button className="data-health" onClick={() => setPreferencesOpen(true)} title="行情与历史数据设置"><span className={`status-dot${health ? '' : healthError ? ' error' : ' muted'}`} /><span>{health ? '已连接' : healthError ? '未连接' : '连接中'}</span></button>
         <button className="nav-item subtle" onClick={() => setPreferencesOpen(true)}><Settings size={16} /><span>设置</span></button>
         <div className="user-block"><div className="avatar">W</div><div><strong>Wenzi</strong><small>个人工作区</small></div></div>
       </div>

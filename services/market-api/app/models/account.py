@@ -17,7 +17,6 @@ class Account(CamelModel):
     fill: str
     members: List[str]
     records: int
-    archived: bool
 
 
 class AccountInput(CamelModel):
@@ -41,16 +40,40 @@ class AccountUpdate(CamelModel):
     stamp: Optional[float] = None
     fill: Optional[str] = None
     members: Optional[List[str]] = None
-    archived: Optional[bool] = None
+
+
+class AccountPosition(CamelModel):
+    instrument_id: str
+    name: str
+    code: str
+    market: str
+    currency: Literal["CNY", "HKD", "USD"]
+    quantity: float
+    cost_price: float
+    price: Optional[float]
+    market_value: Optional[float]
+    weight: Optional[float]
+    unrealized_pnl: Optional[float]
+    realized_pnl: float
+    return_pct: Optional[float]
+
+
+class AccountEquityPoint(CamelModel):
+    date: str
+    value: float
 
 
 class AccountSummary(CamelModel):
-    total_assets: float
-    cash: float
-    market_value: float
-    day_pnl: float
-    total_pnl: float
-    time_weighted_return: float
-    xirr: float
-    max_drawdown: float
-    benchmark_return: float
+    account_id: str
+    currency: Literal["CNY", "HKD", "USD"]
+    total_assets: Optional[float]
+    cash: Optional[float]
+    market_value: Optional[float]
+    day_pnl: Optional[float]
+    total_pnl: Optional[float]
+    total_return: Optional[float]
+    unrealized_pnl: Optional[float]
+    realized_pnl: Optional[float]
+    positions: List[AccountPosition]
+    curve: List[AccountEquityPoint]
+    warnings: List[str]

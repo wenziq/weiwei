@@ -42,3 +42,8 @@ def import_transactions(account_id: str, payload: TransactionImportInput):
 @router.patch("/{account_id}", response_model=Account)
 def update_account(account_id: str, payload: AccountUpdate):
     return account_service.update(account_id, payload)
+
+
+@router.delete("/{account_id}")
+def delete_account(account_id: str):
+    return account_service.delete(account_id)

@@ -51,7 +51,7 @@ async def validation_handler(_, error):
 def health():
     return {
         "status": "ok", "provider": provider.name, "version": settings.version,
-        "demoFallback": settings.allow_demo_fallback, "history": history_collector.status(),
+        "history": history_collector.status(),
         "time": datetime.now(timezone.utc).isoformat(),
     }
 

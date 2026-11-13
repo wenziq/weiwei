@@ -380,3 +380,25 @@ class MarketStore:
         for row in rows:
             result.setdefault(row["sector_name"], set()).add(row["instrument_id"])
         return result
+
+    def sector_candle_ratios(self, sector_name):
+        with self.connect() as connection:
+            rows = connection.execute("""
+                WITH member_bars AS (
+                    SELECT c.instrument_id, c.time, c.open, c.high, c.low, c.close,
+                        c.volume, c.amount,
+                        LAG(c.close) OVER (PARTITION BY c.instrument_id ORDER BY c.time) AS previous_close
+                    FROM candles c
+                    JOIN sector_members m ON m.instrument_id = c.instrument_id
+                    WHERE m.sector_name = ? AND c.period = 'day' AND c.adjustment = 'none'
+                )
+                SELECT time, AVG(open * 1.0 / previous_close) AS open_ratio,
+                    AVG(high * 1.0 / previous_close) AS high_ratio,
+                    AVG(low * 1.0 / previous_close) AS low_ratio,
+                    AVG(close * 1.0 / previous_close) AS close_ratio,
+                    SUM(volume) AS volume, SUM(amount) AS amount, COUNT(*) AS members
+                FROM member_bars
+                WHERE previous_close > 0
+                GROUP BY time ORDER BY time
+            """, (sector_name,)).fetchall()
+        return [dict(row) for row in rows]

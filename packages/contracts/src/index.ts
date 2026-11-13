@@ -1,7 +1,7 @@
 export type ISODateTime = string;
 export type MarketCode = 'SH' | 'SZ' | 'BJ' | 'HK' | 'US' | 'CSI';
 export type Currency = 'CNY' | 'HKD' | 'USD' | 'CNH';
-export type DataStatus = 'snapshot' | 'cached' | 'demo' | 'unavailable';
+export type DataStatus = 'snapshot' | 'cached' | 'unavailable';
 export type ResearchStatus = '未研究' | '待研究' | '已完成' | '已放弃';
 
 export interface SparklinePoint { values: number[] }
@@ -79,8 +79,7 @@ export interface Instrument extends DataProvenance {
   financialSource: string | null;
   financialReport: string | null;
 }
-export interface WatchGroup { name: string; count: number }
-export interface WatchlistData { stocks: Instrument[]; groups: WatchGroup[] }
+export interface WatchlistData { stocks: Instrument[]; tags: string[] }
 export interface TagUpdate { tags: string[] }
 export interface Candle {
   time: number;
@@ -189,18 +188,37 @@ export interface Account {
   fill: string;
   members: string[];
   records: number;
-  archived: boolean;
 }
+export interface AccountPosition {
+  instrumentId: string;
+  name: string;
+  code: string;
+  market: string;
+  currency: Currency;
+  quantity: number;
+  costPrice: number;
+  price: number | null;
+  marketValue: number | null;
+  weight: number | null;
+  unrealizedPnl: number | null;
+  realizedPnl: number;
+  returnPct: number | null;
+}
+export interface AccountEquityPoint { date: string; value: number }
 export interface AccountSummary {
-  totalAssets: number;
-  cash: number;
-  marketValue: number;
-  dayPnl: number;
-  totalPnl: number;
-  timeWeightedReturn: number;
-  xirr: number;
-  maxDrawdown: number;
-  benchmarkReturn: number;
+  accountId: string;
+  currency: Currency;
+  totalAssets: number | null;
+  cash: number | null;
+  marketValue: number | null;
+  dayPnl: number | null;
+  totalPnl: number | null;
+  totalReturn: number | null;
+  unrealizedPnl: number | null;
+  realizedPnl: number | null;
+  positions: AccountPosition[];
+  curve: AccountEquityPoint[];
+  warnings: string[];
 }
 export interface AccountInput {
   name: string;
@@ -210,7 +228,7 @@ export interface AccountInput {
   initial: number;
   members: string[];
 }
-export interface ApiHealth { status: string; provider: string; version: string; time: ISODateTime; demoFallback?: boolean }
+export interface ApiHealth { status: string; provider: string; version: string; time: ISODateTime }
 export interface AIStatus {
   provider: string;
   baseUrl: string;

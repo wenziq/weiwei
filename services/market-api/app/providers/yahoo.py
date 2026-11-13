@@ -26,6 +26,10 @@ class YahooProvider:
     def symbol_for(instrument_id):
         if instrument_id in INDEX_YAHOO_SYMBOLS:
             return INDEX_YAHOO_SYMBOLS[instrument_id]
+        if instrument_id == "fx-usdcny":
+            return "CNY=X"
+        if instrument_id == "fx-hkdcny":
+            return "HKDCNY=X"
         market, code = instrument_id.split("-", 1)
         if market == "sh" or market == "index" and code.startswith("000"):
             return f"{code}.SS"

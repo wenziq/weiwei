@@ -116,8 +116,8 @@ export function ScreenerPage() {
     if (!selectedIds.length) return;
     setBatchBusy(true);
     try {
-      await Promise.all(selectedIds.map(id => api.post<Instrument, { group: string }>(`/watchlist/${id}`, { group: '观察' })));
-      notify(`已将 ${selectedIds.length} 只股票加入“观察”分组`); setSelectedIds([]); window.dispatchEvent(new Event('weiwei-groups-changed'));
+      await Promise.all(selectedIds.map(id => api.post<Instrument, Record<string, never>>(`/watchlist/${id}`, {})));
+      notify(`已将 ${selectedIds.length} 只股票加入自选`); setSelectedIds([]); window.dispatchEvent(new Event('weiwei-tags-changed'));
     } catch (reason) { notify(reason instanceof Error ? reason.message : '批量加入失败'); }
     finally { setBatchBusy(false); }
   };

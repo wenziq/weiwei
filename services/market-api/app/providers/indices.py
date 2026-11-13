@@ -17,6 +17,31 @@ INDEX_SYMBOLS = {
     "index-dji": "usDJI", "index-spx": "usSPX", "index-ixic": "usIXIC", "index-ndx": "usNDX", "index-sox": "usSOX",
 }
 
+INDEX_METADATA = [
+    {"id": "index-000001", "name": "上证指数", "code": "000001", "group": "A股核心"},
+    {"id": "index-399001", "name": "深证成指", "code": "399001", "group": "A股核心"},
+    {"id": "index-399006", "name": "创业板指", "code": "399006", "group": "A股核心"},
+    {"id": "index-000688", "name": "科创 50", "code": "000688", "group": "A股核心"},
+    {"id": "index-899050", "name": "北证 50", "code": "899050", "group": "A股核心"},
+    {"id": "index-930050", "name": "中证 A50", "code": "930050", "group": "A股规模"},
+    {"id": "index-000300", "name": "沪深 300", "code": "000300", "group": "A股规模"},
+    {"id": "index-000510", "name": "中证 A500", "code": "000510", "group": "A股规模"},
+    {"id": "index-000905", "name": "中证 500", "code": "000905", "group": "A股规模"},
+    {"id": "index-000852", "name": "中证 1000", "code": "000852", "group": "全A口径"},
+    {"id": "index-932000", "name": "中证 2000", "code": "932000", "group": "全A口径"},
+    {"id": "index-000985", "name": "中证全指", "code": "000985", "group": "全A口径"},
+    {"id": "index-000922", "name": "中证红利", "code": "000922", "group": "A股主题"},
+    {"id": "index-h30184", "name": "中证全指半导体", "code": "H30184", "group": "A股主题"},
+    {"id": "index-hsi", "name": "恒生指数", "code": "HSI", "group": "港股"},
+    {"id": "index-hstech", "name": "恒生科技", "code": "HSTECH", "group": "港股"},
+    {"id": "index-hscei", "name": "恒生国企", "code": "HSCEI", "group": "港股"},
+    {"id": "index-dji", "name": "道琼斯", "code": "DJI", "group": "美股"},
+    {"id": "index-spx", "name": "标普 500", "code": "SPX", "group": "美股"},
+    {"id": "index-ixic", "name": "纳斯达克综合", "code": "IXIC", "group": "美股"},
+    {"id": "index-ndx", "name": "纳斯达克 100", "code": "NDX", "group": "美股"},
+    {"id": "index-sox", "name": "费城半导体", "code": "SOX", "group": "美股"},
+]
+
 
 class IndexProvider:
     name = "腾讯指数"

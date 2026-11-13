@@ -18,7 +18,7 @@ class CandleService:
         return datetime.fromisoformat(value).timestamp()
 
     def get(self, instrument_id, period="day", limit=500, adjustment="none", before=None):
-        if not re.fullmatch(r"(?:sh|sz|bj|hk|us|index|sector)-[\w.-]+", instrument_id):
+        if not re.fullmatch(r"(?:sh|sz|bj|hk|us|index|sector|fx)-[\w.-]+", instrument_id):
             raise ValueError("证券代码格式不正确")
         daily = period in {"day", "week", "month"}
         if period == "day":
@@ -57,6 +57,9 @@ class CandleService:
             message = "本机数据已显示，后台更新最近行情"
         elif not candles:
             message = self.refresh_scheduler.error_for(instrument_id, period) or "暂无可显示的真实历史数据"
+        if candles and candles[-1].get("source") == "当前成分等权回溯":
+            note = "按当前成分股真实日线等权回溯，非官方板块指数，不追溯历史成分变化"
+            message = f"{message}；{note}" if message else note
         return {
             "instrumentId": instrument_id, "period": period, "adjustment": adjustment,
             "source": source, "status": "cached" if candles else "unavailable",

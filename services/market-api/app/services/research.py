@@ -69,3 +69,10 @@ class ResearchService:
                     return self.apply(item, payload.model_dump(by_alias=True))
             raise KeyError(document_id)
         return self.store.update("research", update)
+
+    def delete(self, document_id: str):
+        self.get(document_id)
+        def update(document):
+            document["documents"] = [item for item in document["documents"] if item["id"] != document_id]
+            return {"deleted": True, "id": document_id}
+        return self.store.update("research", update)

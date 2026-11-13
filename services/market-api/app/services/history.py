@@ -19,14 +19,14 @@ class HistoryCollector:
         self.download_locks = {}
         self.recent_requests = {}
 
-    def start(self, markets=None, priority_only=False):
+    def start(self, markets=None, priority_only=False, resume=True):
         with self.lock:
             if self.thread and self.thread.is_alive():
                 return False
             requested_markets = tuple(markets or settings.history_markets)
             latest = self.store.latest_run()
             resume_from = None
-            if latest and not priority_only and latest["status"] in {"running", "paused", "interrupted", "failed"} and set(json.loads(latest["markets"])) == set(requested_markets):
+            if resume and latest and not priority_only and latest["status"] in {"running", "paused", "interrupted", "failed"} and set(json.loads(latest["markets"])) == set(requested_markets):
                 resume_from = latest.get("current_id")
             if latest and latest["status"] == "running":
                 self.store.update_run(latest["id"], status="interrupted", error="服务重启，采集已恢复", finished_at=self.store.now())
@@ -65,8 +65,13 @@ class HistoryCollector:
             recent = time.time() - self.recent_requests.get(key, 0) < (15 if period.endswith("m") else 60)
             if recent and (not full_history or state and state["status"] == "complete"):
                 return {"count": 0, "source": "recent"}
-            start = None if full_history and (not state or state["status"] != "complete") else state["last_time"] - 7 * 86400 if state and state.get("last_time") else None
-            if instrument_id.startswith(("index-", "sector-")):
+            if instrument_id.startswith("sector-") and full_history:
+                start = None
+            else:
+                start = None if full_history and (not state or state["status"] != "complete") else state["last_time"] - 7 * 86400 if state and state.get("last_time") else None
+            if instrument_id.startswith("sector-"):
+                history_limit = None
+            elif instrument_id.startswith("index-"):
                 history_limit = 500
             elif start is None and full_history:
                 history_limit = None
@@ -97,9 +102,13 @@ class HistoryCollector:
 
     def run(self, run_id, markets, priority_only, resume_from=None):
         try:
+            ids = set()
             for market in markets:
-                self.provider.catalog.refresh(market=market)
-            ids = set(self.store.market_ids(markets))
+                if market == "SECTORS":
+                    ids.update(item["id"] for item in self.provider.sector_provider.sectors())
+                else:
+                    self.provider.catalog.refresh(market=market)
+                    ids.update(self.store.market_ids([market]))
             priority = [item for item in self.provider.priority_ids() if item in ids]
             targets = priority if priority_only else priority + sorted(ids.difference(priority))
             if resume_from in targets:

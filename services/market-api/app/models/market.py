@@ -2,7 +2,7 @@ from typing import Dict, List, Literal, Optional
 
 from .base import CamelModel
 
-DataStatus = Literal["snapshot", "cached", "demo", "unavailable"]
+DataStatus = Literal["snapshot", "cached", "unavailable"]
 
 
 class IndexQuote(CamelModel):
@@ -92,26 +92,13 @@ class Instrument(CamelModel):
     quote_time: Optional[str] = None
 
 
-class WatchGroup(CamelModel):
-    name: str
-    count: int
-
-
 class WatchlistData(CamelModel):
     stocks: List[Instrument]
-    groups: List[WatchGroup]
+    tags: List[str]
 
 
 class TagUpdate(CamelModel):
     tags: List[str]
-
-
-class WatchlistMembership(CamelModel):
-    group: str = "观察"
-
-
-class WatchGroupInput(CamelModel):
-    name: str
 
 
 class Candle(CamelModel):
@@ -139,8 +126,9 @@ class CandleSeries(CamelModel):
 
 
 class HistoryRequest(CamelModel):
-    markets: List[Literal["CN", "HK", "US"]] = ["CN", "HK", "US"]
+    markets: List[Literal["CN", "HK", "US", "SECTORS"]] = ["CN", "HK", "US"]
     priority_only: bool = False
+    resume: bool = True
 
 
 class MarketHistoryStats(CamelModel):

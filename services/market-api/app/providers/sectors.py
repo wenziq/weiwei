@@ -2,7 +2,6 @@ import json
 import logging
 import math
 import time
-from datetime import datetime, timezone
 from html.parser import HTMLParser
 import re
 
@@ -130,41 +129,75 @@ class SectorProvider:
         if period not in {"day", "week", "month"}:
             raise ValueError("该板块数据源当前提供日、周、月K线")
         if not instrument_id.startswith("sector-ths."):
-            raise ValueError("该概念板块暂未取得历史序列，快照仍为真实行情")
+            return self.derived_candles(instrument_id, period, limit, start, end)
         key = (instrument_id, period, limit, start, end)
         if self.candle_cache.get(key, (0, None))[0] > time.time() - 60:
             return self.candle_cache[key][1]
         code = instrument_id.removeprefix("sector-ths.")
-        latest = self.ths_payload(f"https://d.10jqka.com.cn/v4/line/bk_{code}/01/last.js")
-        rows = latest.get("data", "").split(";")
-        years = sorted(int(year) for year in latest.get("year", {}))
-        needed = max(0, math.ceil(limit * {"day": 1, "week": 5, "month": 12}[period] / 220))
-        selected = years[-needed:] if needed else []
-        if start:
-            selected = [year for year in years if year >= datetime.fromtimestamp(start, timezone.utc).year]
-        current_year = datetime.now(timezone.utc).year
-        for year in selected:
-            if year == current_year and not start:
-                continue
-            try:
-                payload = self.ths_payload(f"https://d.10jqka.com.cn/v4/line/bk_{code}/01/{year}.js")
-                rows.extend(payload.get("data", "").split(";"))
-            except (OSError, ValueError) as error:
-                logger.warning("板块历史年份读取失败 %s %d: %s", code, year, error)
-        parsed = []
-        for row in rows:
-            values = row.split(",")
-            if len(values) < 7 or len(values[0]) != 8:
-                continue
-            date = f"{values[0][:4]}-{values[0][4:6]}-{values[0][6:8]}"
-            parsed.append([date, values[1], values[4], values[2], values[3], values[5], values[6]])
-        candles = aggregate_candles(parse_candles(parsed, "CN", "同花顺板块"), period) if period != "day" else parse_candles(parsed, "CN", "同花顺板块")
+        payload = self.ths_payload(f"https://d.10jqka.com.cn/v4/line/bk_{code}/01/all.js")
+        prices = [int(value) for value in payload["price"].split(",")]
+        volumes = payload["volumn"].split(",")
+        dates = payload["dates"].split(",")
+        years = [year for year, count in payload["sortYear"] for _ in range(count)]
+        factor = float(payload["priceFactor"])
+        if not dates or len(prices) != len(dates) * 4 or len(volumes) != len(dates) or len(years) != len(dates) or len(dates) != int(payload["total"]):
+            raise ValueError(f"同花顺板块 {code} 的完整K线字段长度不一致")
+        rows = []
+        for index, date in enumerate(dates):
+            low, open_delta, high_delta, close_delta = prices[index * 4:index * 4 + 4]
+            open_price, close_price = (low + open_delta) / factor, (low + close_delta) / factor
+            high_price, low_price = (low + high_delta) / factor, low / factor
+            corrected_high = max(open_price, close_price, high_price, low_price)
+            corrected_low = min(open_price, close_price, high_price, low_price)
+            if (corrected_high - high_price) / close_price >= 0.001 or (low_price - corrected_low) / close_price >= 0.001:
+                raise ValueError(f"同花顺板块 {code} 存在超出精度范围的OHLC异常: {years[index]}-{date}")
+            rows.append([
+                f"{years[index]}-{date[:2]}-{date[2:]}", open_price, close_price,
+                corrected_high, corrected_low, volumes[index],
+            ])
+        candles = parse_candles(rows, "CN", "同花顺板块")
+        if len(candles) != len(dates):
+            raise ValueError(f"同花顺板块 {code} 存在无效K线")
+        candles = aggregate_candles(candles, period) if period != "day" else candles
         candles = [item for item in candles if (not start or item["time"] >= start) and (not end or item["time"] <= end)]
         if not candles:
             raise ValueError(f"板块 {code} 没有历史K线")
-        candles = candles[-limit:]
+        candles = candles[-limit:] if limit is not None else candles
         self.candle_cache[key] = (time.time(), candles)
         return candles
+
+    def derived_candles(self, instrument_id, period, limit, start, end):
+        if not self.cache:
+            self.sectors()
+        sector = next((item for item in self.cache if item["id"] == instrument_id), None)
+        if not sector:
+            raise KeyError(instrument_id)
+        if self.market_store is None:
+            raise ValueError("本机历史库未连接")
+        name = sector["name"]
+        member_ids = self.market_store.sector_members([name]).get(name, set())
+        if not member_ids:
+            member_ids = self.members(instrument_id)
+            if member_ids:
+                self.market_store.save_sector_members(name, sorted(member_ids))
+        if not member_ids:
+            raise ValueError(f"{name} 暂无可用于历史回溯的真实成分股")
+        level = 1000.0
+        candles = []
+        for row in self.market_store.sector_candle_ratios(name):
+            open_price = level * row["open_ratio"]
+            close = level * row["close_ratio"]
+            candles.append({
+                "time": row["time"], "open": open_price,
+                "high": level * row["high_ratio"], "low": level * row["low_ratio"], "close": close,
+                "volume": row["volume"] or 0, "amount": row["amount"],
+            })
+            level = close
+        if not candles:
+            raise ValueError(f"{name} 的成分股暂无可用历史日线")
+        candles = aggregate_candles(candles, period) if period != "day" else candles
+        candles = [item for item in candles if (not start or item["time"] >= start) and (not end or item["time"] <= end)]
+        return candles[-limit:] if limit is not None else candles
 
     def known_sectors(self):
         return self.cache

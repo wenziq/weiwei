@@ -31,3 +31,8 @@ def update_research(document_id: str, payload: ResearchUpdate):
 @router.patch("/{document_id}", response_model=ResearchDocument)
 def update_research_metadata(document_id: str, payload: ResearchMetadataUpdate):
     return research_service.update_metadata(document_id, payload)
+
+
+@router.delete("/{document_id}")
+def delete_research(document_id: str):
+    return research_service.delete(document_id)

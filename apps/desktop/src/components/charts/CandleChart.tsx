@@ -5,6 +5,7 @@ import type { Candle, CandleSeries } from '@weiwei/contracts';
 import { useApi } from '@/lib/useApi';
 import { api } from '@/lib/api';
 import { useApp } from '@/app/providers/AppProviders';
+import { direction, signed } from '@/lib/format';
 
 const periods = [{ key: 'day', label: '日K' }, { key: 'week', label: '周K' }, { key: 'month', label: '月K' }, { key: '60m', label: '60 分' }, { key: '30m', label: '30 分' }, { key: '15m', label: '15 分' }, { key: '5m', label: '5 分' }, { key: '1m', label: '1 分' }];
 
@@ -33,12 +34,14 @@ export function CandleChart({ instrumentId, height = 390 }: { instrumentId: stri
   const candleSeries = useRef<ISeriesApi<'Candlestick'> | null>(null);
   const volumeSeries = useRef<ISeriesApi<'Histogram'> | null>(null);
   const candlesByTime = useRef(new Map<number, Candle>());
+  const changesByTime = useRef(new Map<number, number>());
   const viewKey = useRef('');
   const seriesRef = useRef<CandleSeries | null>(null);
   const loadingOlder = useRef(false);
   const historyExhausted = useRef(false);
   const fitAll = useRef(false);
   const [focused, setFocused] = useState<Candle | null>(null);
+  const [hovered, setHovered] = useState<{ time: number; x: number; y: number; changePct: number | null } | null>(null);
   seriesRef.current = series;
   const data = series?.candles ?? null;
   const availablePeriods = instrumentId.startsWith('sector-') ? periods.filter(item => ['day', 'week', 'month'].includes(item.key)) : periods;
@@ -111,9 +114,22 @@ export function CandleChart({ instrumentId, height = 390 }: { instrumentId: stri
     volumeSeries.current.priceScale().applyOptions({ scaleMargins: { top: 0.12, bottom: 0.08 } });
     instance.subscribeCrosshairMove(param => {
       const time = param.time as number | undefined;
-      setFocused(time === undefined ? null : candlesByTime.current.get(time) ?? null);
+      const candle = time === undefined ? null : candlesByTime.current.get(time) ?? null;
+      if (time === undefined || !param.point || !candle) { setFocused(null); setHovered(null); return; }
+      setFocused(candle);
+      const tooltipWidth = 190;
+      const tooltipHeight = 36;
+      const right = param.point.x + 14 + tooltipWidth > element.clientWidth;
+      const x = right ? param.point.x - tooltipWidth - 14 : param.point.x + 14;
+      const y = param.point.y < tooltipHeight + 14 ? param.point.y + 14 : param.point.y - tooltipHeight - 10;
+      setHovered({
+        time,
+        x: Math.max(8, Math.min(x, element.clientWidth - tooltipWidth - 8)),
+        y: Math.max(8, Math.min(y, element.clientHeight - tooltipHeight - 8)),
+        changePct: changesByTime.current.get(time) ?? null,
+      });
     });
-    const clearFocus = () => setFocused(null);
+    const clearFocus = () => { setFocused(null); setHovered(null); };
     element.addEventListener('mouseleave', clearFocus);
     chart.current = instance;
     viewKey.current = '';
@@ -136,6 +152,7 @@ export function CandleChart({ instrumentId, height = 390 }: { instrumentId: stri
     candleSeries.current?.setData([]);
     volumeSeries.current?.setData([]);
     setFocused(null);
+    setHovered(null);
     historyExhausted.current = false;
     fitAll.current = false;
   }, [instrumentId, period]);
@@ -143,6 +160,11 @@ export function CandleChart({ instrumentId, height = 390 }: { instrumentId: stri
   useEffect(() => {
     if (!data || !candleSeries.current || !volumeSeries.current || !chart.current) return;
     candlesByTime.current = new Map(data.map(item => [chartTime(item, period, zone), item]));
+    changesByTime.current = new Map();
+    data.forEach((item, index) => {
+      const previousClose = data[index - 1]?.close;
+      if (previousClose && previousClose > 0) changesByTime.current.set(chartTime(item, period, zone), (item.close - previousClose) / previousClose * 100);
+    });
     const prices: CandlestickData[] = data.map(item => ({ time: chartTime(item, period, zone) as UTCTimestamp, open: item.open, high: item.high, low: item.low, close: item.close }));
     const volumes: HistogramData[] = data.map(item => ({ time: chartTime(item, period, zone) as UTCTimestamp, value: item.volume, color: item.close >= item.open ? 'rgba(240,100,107,.68)' : 'rgba(43,189,138,.68)' }));
     candleSeries.current.setData(prices);
@@ -158,11 +180,11 @@ export function CandleChart({ instrumentId, height = 390 }: { instrumentId: stri
   }, [data, instrumentId, period, theme]);
 
   const latest = focused ?? data?.at(-1);
-  const sourceStatus = series?.servedBy === 'database' ? '本机数据库' : series?.status === 'demo' ? '演示数据' : series?.status === 'snapshot' ? '真实行情快照' : '暂无行情';
+  const sourceStatus = series?.servedBy === 'database' ? '本机数据库' : series?.status === 'snapshot' ? '真实行情快照' : '暂无行情';
   return <section className="candle-module">
     <div className="chart-toolbar"><div className="timeframes">{availablePeriods.map(item => <button key={item.key} className={period === item.key ? 'active' : ''} onClick={() => setPeriod(item.key)}>{item.label}</button>)}</div><div className="chart-options"><button className="text-button" disabled={!data?.length || loadingAll} onClick={() => void loadAll()} title={`本机已加载 ${data?.length ?? 0} 根 · 查看全部已保存历史`}>{loadingAll ? '读取中' : '全部历史'}</button><span className={`data-source ${series?.status ?? ''}`}>不复权 · {series?.source ?? '正在读取本机数据库'}{series ? ` · ${sourceStatus}${series.refreshing ? ' · 后台更新' : ''}` : ''}</span></div></div>
     {latest && <div className="ohlc-line"><span>开 <b>{latest.open.toFixed(2)}</b></span><span>高 <b className="up">{latest.high.toFixed(2)}</b></span><span>低 <b>{latest.low.toFixed(2)}</b></span><span>收 <b className={latest.close >= latest.open ? 'up' : 'down'}>{latest.close.toFixed(2)}</b></span><span>成交量 <b>{Intl.NumberFormat('zh-CN', { notation: 'compact', maximumFractionDigits: 2 }).format(latest.volume)}</b></span></div>}
-    <div className="chart-canvas-wrap" style={{ height }}><div ref={container} className="chart-canvas" />{loading && <div className="chart-loading">正在读取本机 K 线…</div>}{error && <div className="chart-loading error">{error}</div>}{!loading && !error && data?.length === 0 && <div className="chart-loading">{series?.message ?? '该标的暂无可显示的行情数据'}</div>}</div>
+    <div className="chart-canvas-wrap" style={{ height }}><div ref={container} className="chart-canvas" />{hovered && <div className="candle-hover-tooltip" role="tooltip" style={{ left: hovered.x, top: hovered.y }}><span>{new Date(hovered.time * 1000).toISOString().slice(0, period.endsWith('m') ? 16 : 10).replace('T', ' ')}</span><strong className={`candle-hover-change ${direction(hovered.changePct)}`}>{signed(hovered.changePct)}</strong></div>}{loading && <div className="chart-loading">正在读取本机 K 线…</div>}{error && <div className="chart-loading error">{error}</div>}{!loading && !error && data?.length === 0 && <div className="chart-loading">{series?.message ?? '该标的暂无可显示的行情数据'}</div>}</div>
     {series?.message && data && data.length > 0 && <div className="history-footnote">{series.message}</div>}
     <div className="chart-bottom-bar"><span>向左拖动加载更早历史 · 滚轮缩放 · 十字光标查看 OHLC</span><span title={warning ?? undefined}>{warning ? '刷新暂时失败，显示上次数据' : `${instrumentId.startsWith('sector-') ? '板块日线' : '交易所时区'} · 仅价格与成交量`}</span></div>
   </section>;
