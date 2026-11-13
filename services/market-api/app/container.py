@@ -5,6 +5,7 @@ from .services.accounts import AccountService
 from .services.ai import AIService
 from .services.candles import CandleService
 from .services.history import HistoryCollector
+from .services.macro import MacroService
 from .services.refresh import RefreshScheduler
 from .services.research import ResearchService
 from .services.screener import ScreenerService
@@ -12,6 +13,7 @@ from .services.screener_data import ScreenerDataCollector
 from .services.watchlist import WatchlistService
 
 provider = CompositeMarketDataProvider(settings.data_dir)
+macro_service = MacroService(provider.store)
 store = JsonDocumentStore(settings.data_dir, ROOT_DIR / "app" / "data" / "user_seed.json")
 watchlist_service = WatchlistService(provider, store)
 provider.priority_ids = watchlist_service.all_ids

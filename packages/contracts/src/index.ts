@@ -81,6 +81,37 @@ export interface Instrument extends DataProvenance {
 }
 export interface WatchlistData { stocks: Instrument[]; tags: string[]; quotesRefreshing: boolean }
 export interface TagUpdate { tags: string[] }
+export interface MacroIndicator {
+  id: string;
+  name: string;
+  category: string;
+  region: string;
+  unit: string;
+  frequency: string;
+  latest: number | null;
+  previous: number | null;
+  change: number | null;
+  time: number | null;
+  points: number;
+  source: string;
+  sourceUrl: string | null;
+  custom: boolean;
+  refreshing: boolean;
+  error: string | null;
+}
+export interface MacroPoint { time: number; date: string; value: number }
+export interface MacroSeries {
+  id: string;
+  name: string;
+  unit: string;
+  category: string;
+  region: string;
+  source: string;
+  sourceUrl: string | null;
+  points: MacroPoint[];
+  refreshing: boolean;
+  error: string | null;
+}
 export interface Candle {
   time: number;
   open: number;

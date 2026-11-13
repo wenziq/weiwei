@@ -5,6 +5,9 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 
 WORKDIR /app
 
+RUN apt-get update && apt-get install -y --no-install-recommends curl \
+    && rm -rf /var/lib/apt/lists/*
+
 COPY services/market-api/pyproject.toml ./pyproject.toml
 COPY services/market-api/app ./app
 RUN pip install --no-cache-dir . \

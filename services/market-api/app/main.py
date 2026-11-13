@@ -7,7 +7,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
 from .api.router import api_router
-from .container import history_collector, provider, refresh_scheduler
+from .container import history_collector, macro_service, provider, refresh_scheduler
 from .core.config import settings
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s: %(message)s")
@@ -17,11 +17,14 @@ logging.getLogger("app").setLevel(logging.INFO)
 @asynccontextmanager
 async def lifespan(_):
     refresh_scheduler.start()
+    macro_service.start()
+    macro_service.ensure()
     try:
         if settings.history_auto_start:
             history_collector.start()
         yield
     finally:
+        macro_service.stop()
         history_collector.stop()
         refresh_scheduler.stop()
 

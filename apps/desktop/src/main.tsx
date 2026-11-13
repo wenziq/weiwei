@@ -12,6 +12,7 @@ import './styles/accessibility.css';
 import './styles/market-data.css';
 import './styles/workflows.css';
 import './styles/sector-picker.css';
+import './styles/macro.css';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode><App /></React.StrictMode>,

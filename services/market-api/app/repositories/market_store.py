@@ -95,6 +95,27 @@ class MarketStore:
                     updated_at TEXT NOT NULL,
                     PRIMARY KEY (sector_name, instrument_id)
                 );
+                CREATE TABLE IF NOT EXISTS macro_definitions (
+                    id TEXT PRIMARY KEY,
+                    payload TEXT NOT NULL,
+                    custom INTEGER NOT NULL DEFAULT 1,
+                    updated_at TEXT NOT NULL
+                );
+                CREATE TABLE IF NOT EXISTS macro_points (
+                    series_id TEXT NOT NULL,
+                    time INTEGER NOT NULL,
+                    date TEXT NOT NULL,
+                    value REAL NOT NULL,
+                    fetched_at TEXT NOT NULL,
+                    PRIMARY KEY (series_id, time)
+                );
+                CREATE TABLE IF NOT EXISTS macro_state (
+                    series_id TEXT PRIMARY KEY,
+                    status TEXT NOT NULL,
+                    error TEXT,
+                    fetched_at TEXT,
+                    updated_at TEXT NOT NULL
+                );
             """)
 
     @contextmanager
@@ -276,6 +297,94 @@ class MarketStore:
             for row in rows:
                 series[row["instrument_id"]].append(row["close"])
         return {item: list(reversed(values)) for item, values in series.items()}
+
+    def custom_macro_definitions(self):
+        with self.connect() as connection:
+            rows = connection.execute("SELECT payload FROM macro_definitions WHERE custom=1 ORDER BY payload").fetchall()
+        return [json.loads(row["payload"]) for row in rows]
+
+    def save_macro_definition(self, definition):
+        with self.connect() as connection:
+            connection.execute("""
+                INSERT INTO macro_definitions(id, payload, custom, updated_at) VALUES (?, ?, ?, ?)
+                ON CONFLICT(id) DO UPDATE SET payload=excluded.payload,
+                    custom=excluded.custom, updated_at=excluded.updated_at
+            """, (definition["id"], json.dumps(definition, ensure_ascii=False), 1 if definition["custom"] else 0, self.now()))
+
+    def delete_macro_definition(self, indicator_id):
+        with self.connect() as connection:
+            connection.execute("DELETE FROM macro_points WHERE series_id=?", (indicator_id,))
+            connection.execute("DELETE FROM macro_state WHERE series_id=?", (indicator_id,))
+            connection.execute("DELETE FROM macro_definitions WHERE id=?", (indicator_id,))
+
+    def save_macro_points(self, indicator_id, rows):
+        if not rows:
+            return
+        with self.connect() as connection:
+            connection.executemany("""
+                INSERT INTO macro_points(series_id, time, date, value, fetched_at) VALUES (?, ?, ?, ?, ?)
+                ON CONFLICT(series_id, time) DO UPDATE SET date=excluded.date,
+                    value=excluded.value, fetched_at=excluded.fetched_at
+            """, [(indicator_id, row["time"], row["date"], row["value"], self.now()) for row in rows])
+
+    def macro_points(self, indicator_id, start=None, end=None):
+        conditions, params = ["series_id=?"], [indicator_id]
+        if start is not None:
+            conditions.append("time >= ?")
+            params.append(start)
+        if end is not None:
+            conditions.append("time <= ?")
+            params.append(end)
+        with self.connect() as connection:
+            rows = connection.execute(f"""
+                SELECT time, date, value FROM macro_points
+                WHERE {' AND '.join(conditions)} ORDER BY time
+            """, params).fetchall()
+        return [dict(row) for row in rows]
+
+    def macro_latest(self, ids):
+        if not ids:
+            return {}
+        placeholders = ",".join("?" for _ in ids)
+        with self.connect() as connection:
+            counts = connection.execute(f"""
+                SELECT series_id, COUNT(*) AS points FROM macro_points
+                WHERE series_id IN ({placeholders}) GROUP BY series_id
+            """, ids).fetchall()
+            rows = connection.execute(f"""
+                SELECT series_id, time, value FROM (
+                    SELECT series_id, time, value,
+                        ROW_NUMBER() OVER (PARTITION BY series_id ORDER BY time DESC) AS position
+                    FROM macro_points WHERE series_id IN ({placeholders})
+                ) WHERE position <= 2
+            """, ids).fetchall()
+        result = {row["series_id"]: {"points": row["points"]} for row in counts}
+        for row in rows:
+            item = result[row["series_id"]]
+            if "latest" not in item:
+                item["latest"], item["time"] = row["value"], row["time"]
+            elif "previous" not in item:
+                item["previous"] = row["value"]
+        for item in result.values():
+            if "latest" in item and "previous" in item:
+                item["change"] = item["latest"] - item["previous"]
+        return result
+
+    def macro_state(self, indicator_id):
+        with self.connect() as connection:
+            row = connection.execute("SELECT * FROM macro_state WHERE series_id=?", (indicator_id,)).fetchone()
+        return dict(row) if row else {}
+
+    def set_macro_state(self, indicator_id, status, error=None):
+        now = self.now()
+        with self.connect() as connection:
+            connection.execute("""
+                INSERT INTO macro_state(series_id, status, error, fetched_at, updated_at)
+                VALUES (?, ?, ?, ?, ?)
+                ON CONFLICT(series_id) DO UPDATE SET status=excluded.status, error=excluded.error,
+                    fetched_at=CASE WHEN excluded.status='complete' THEN excluded.fetched_at ELSE macro_state.fetched_at END,
+                    updated_at=excluded.updated_at
+            """, (indicator_id, status, error, now if status == "complete" else None, now))
 
     def ingestion(self, instrument_id, period, adjustment="none"):
         with self.connect() as connection:
