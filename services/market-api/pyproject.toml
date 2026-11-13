@@ -12,7 +12,8 @@ dependencies = [
   "pydantic>=2.9,<3",
   "pypinyin>=0.51,<1",
   "tzdata>=2025.2",
-  "keyring>=25,<26"
+  "keyring>=25,<26",
+  "py-mini-racer>=0.6,<0.7"
 ]
 
 [tool.setuptools.packages.find]

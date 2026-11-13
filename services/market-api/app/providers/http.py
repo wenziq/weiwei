@@ -23,12 +23,12 @@ def throttle(url):
         last_request[host] = time.monotonic()
 
 
-def fetch_bytes(url: str, timeout: float = 8, retries: int = 2) -> bytes:
+def fetch_bytes(url: str, timeout: float = 8, retries: int = 2, headers=None) -> bytes:
     last_error = None
     for attempt in range(retries + 1):
         try:
             throttle(url)
-            request = Request(url, headers={"User-Agent": f"Mozilla/5.0 WeiWei/{settings.version}", "Accept": "*/*"})
+            request = Request(url, headers={"User-Agent": f"Mozilla/5.0 WeiWei/{settings.version}", "Accept": "*/*", **(headers or {})})
             with urlopen(request, timeout=timeout) as response:
                 return response.read()
         except Exception as error:

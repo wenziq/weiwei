@@ -356,7 +356,7 @@ class CompositeMarketDataProvider:
                 raise
         if instrument_id.startswith("sector-"):
             candles = self.sector_provider.candles(instrument_id, period, limit, start, end, adjustment)
-            source = "同花顺板块" if instrument_id.startswith("sector-ths.") else "当前成分等权回溯"
+            source = "同花顺板块" if instrument_id.startswith(("sector-ths.", "sector-ths-concept.")) else "当前成分等权回溯"
             return candles, source, True
         providers = [self.eastmoney, self.yahoo] if instrument_id.startswith(("sh-", "sz-", "bj-")) else [self.yahoo, self.tencent]
         errors = []
