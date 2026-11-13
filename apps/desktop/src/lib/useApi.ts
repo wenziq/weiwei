@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { api } from './api';
 
-export function useApi<T>(path: string | null, dependencies: readonly unknown[] = [], options: { refetchIntervalMs?: number; mergeData?: (incoming: T, current: T | null) => T } = {}) {
+export function useApi<T>(path: string | null, dependencies: readonly unknown[] = [], options: { refetchIntervalMs?: number; keepPreviousData?: boolean; mergeData?: (incoming: T, current: T | null) => T } = {}) {
   const [data, setData] = useState<T | null>(null);
   const [dataPath, setDataPath] = useState<string | null>(null);
   const [loading, setLoading] = useState(Boolean(path));
@@ -29,8 +29,10 @@ export function useApi<T>(path: string | null, dependencies: readonly unknown[] 
     }
     if (previousPath.current !== path) {
       previousPath.current = path;
-      hasData.current = false;
-      setData(null);
+      if (!options.keepPreviousData) {
+        hasData.current = false;
+        setData(null);
+      }
     }
     const controller = new AbortController();
     inFlight.current = true;

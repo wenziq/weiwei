@@ -23,7 +23,7 @@ export function AddInstrumentModal({ open, onClose, existingIds, onAdded }: { op
   };
   return <Modal open={open} onClose={onClose} title="添加股票到自选" className="wide" footer={<span className="dialog-subtitle">加入自选不等于买入或持仓，不会修改任何证券账户。</span>}>
     <label className="stock-search-field">搜索全市场<div className="inner-search"><Search size={14} /><input autoFocus value={query} onChange={event => setQuery(event.target.value)} placeholder="股票名称、代码或拼音首字母" /></div></label>
-    <div className="dialog-subtitle">覆盖沪深京全市场、港交所股票与 REIT、美股非 ETF 证券。显示真实行情快照，离线时使用本机目录与缓存。</div>
+    <div className="dialog-subtitle">覆盖沪深京股票、ETF 与 LOF，港股股票、REIT 与 ETP，以及美股股票和 ETF。显示真实行情快照，离线时使用本机目录与缓存。</div>
     {loading && <div className="async-state">正在搜索全市场…</div>}{error && <div className="async-state error">{error}</div>}
     <div className="catalog-results">{data?.map(stock => <div className="setting-row" key={stock.id}><span><strong>{stock.name}</strong><small>{stock.code} · {stock.market} · {stock.industry}</small></span><span className="catalog-quote"><strong>{money(stock.price, stock.currency)}</strong><ChangeText value={stock.changePct} /></span><button className="button compact ghost" disabled={existingIds.includes(stock.id) || addingId === stock.id} onClick={() => void add(stock)}>{existingIds.includes(stock.id) ? <><Check size={13} />已加入</> : addingId === stock.id ? '加入中…' : <><Plus size={13} />加入</>}</button></div>)}</div>
   </Modal>;

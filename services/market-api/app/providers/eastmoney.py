@@ -16,11 +16,11 @@ logger = logging.getLogger(__name__)
 
 
 def secid_for(code):
-    return ("bj-" if code.startswith(("4", "8", "920")) else "sh-" if code.startswith("6") else "sz-") + code
+    return ("bj-" if code.startswith(("4", "8", "920")) else "sh-" if code.startswith(("5", "6", "9")) else "sz-") + code
 
 
 def secid_market(code):
-    return "BJ" if code.startswith(("4", "8", "920")) else "SH" if code.startswith("6") else "SZ"
+    return "BJ" if code.startswith(("4", "8", "920")) else "SH" if code.startswith(("5", "6", "9")) else "SZ"
 
 
 def optional_number(value):
@@ -83,27 +83,30 @@ class EastMoneyProvider:
                 rows.extend((payload.get("data") or {}).get("diff") or [])
             if not rows or expected and len(rows) != expected:
                 raise RuntimeError(f"东方财富A股目录不完整: {len(rows)} / {expected}")
-            return rows
+            return [*rows, *self.download_sina_catalog(nodes=("etf_hq_fund", "lof_hq_fund"))]
         except (OSError, ValueError, RuntimeError) as error:
-            logger.warning("东方财富A股目录不可用，切换新浪目录: %s", error)
+            logger.warning("东方财富证券目录不可用，切换新浪目录: %s", error)
             return self.download_sina_catalog()
 
     @staticmethod
-    def download_sina_catalog():
-        def fetch_page(page):
-            url = f"https://vip.stock.finance.sina.com.cn/quotes_service/api/json_v2.php/Market_Center.getHQNodeData?page={page}&num=100&sort=symbol&asc=1&node=hs_a&symbol=&_s_r_a=page"
+    def download_sina_catalog(nodes=("hs_a", "etf_hq_fund", "lof_hq_fund")):
+        def fetch_page(node, page):
+            url = f"https://vip.stock.finance.sina.com.cn/quotes_service/api/json_v2.php/Market_Center.getHQNodeData?page={page}&num=100&sort=symbol&asc=1&node={node}&symbol=&_s_r_a=page"
             return fetch_json(url, timeout=15, retries=1)
-        first = fetch_page(1)
-        count_text = fetch_json("https://vip.stock.finance.sina.com.cn/quotes_service/api/json_v2.php/Market_Center.getHQNodeStockCount?node=hs_a", timeout=15, retries=1)
-        expected = int(count_text)
-        pages = math.ceil(expected / 100)
-        rows = [*first]
-        with ThreadPoolExecutor(max_workers=4) as executor:
-            for page_rows in executor.map(fetch_page, range(2, pages + 1)):
-                rows.extend(page_rows)
-        if len(rows) < expected * 0.95:
-            raise RuntimeError(f"新浪A股目录不完整: {len(rows)} / {expected}")
-        return [{"f12": row["code"], "f14": row["name"], "f2": float(row["trade"]), "f3": float(row["changepercent"]), "f6": row["amount"], "f8": row["turnoverratio"], "f20": row["mktcap"], "f21": row["nmc"], "cap_divisor": 10000, "source": "新浪财经"} for row in rows]
+        rows = []
+        for node in nodes:
+            first = fetch_page(node, 1)
+            count_text = fetch_json(f"https://vip.stock.finance.sina.com.cn/quotes_service/api/json_v2.php/Market_Center.getHQNodeStockCount?node={node}", timeout=15, retries=1)
+            expected = int(count_text)
+            pages = math.ceil(expected / 100)
+            node_rows = [*first]
+            with ThreadPoolExecutor(max_workers=4) as executor:
+                for page_rows in executor.map(lambda page: fetch_page(node, page), range(2, pages + 1)):
+                    node_rows.extend(page_rows)
+            if len(node_rows) != expected:
+                logger.warning("新浪证券目录计数与可下载记录不一致，已读取全部可用页面: %s %d / %d", node, len(node_rows), expected)
+            rows.extend({"f12": row["code"], "f14": row["name"], "f2": optional_number(row.get("trade")), "f3": optional_number(row.get("changepercent")), "f6": row.get("amount"), "f8": optional_number(row.get("turnoverratio")), "f20": row.get("mktcap"), "f21": row.get("nmc"), "cap_divisor": 10000, "source": "新浪财经", **({"f100": "基金 / ETF"} if node != "hs_a" else {})} for row in node_rows)
+        return rows
 
     @staticmethod
     def convert(row):

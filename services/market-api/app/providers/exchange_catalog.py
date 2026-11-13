@@ -39,7 +39,7 @@ def hongkong_catalog():
                         value = shared[int(value)]
                     column = "".join(character for character in cell.get("r", "") if character.isalpha())
                     cells[column] = value
-                if cells.get("C") not in {"Equity", "Real Estate Investment Trusts"}:
+                if cells.get("C") not in {"Equity", "Real Estate Investment Trusts", "股本", "房地產投資信託基金", "Exchange Traded Products", "Exchange Traded Funds", "交易所買賣產品"}:
                     continue
                 code = cells["A"].strip().zfill(5)
                 currency = {"RMB": "CNH"}.get(cells.get("Q", "HKD").strip(), cells.get("Q", "HKD").strip())
@@ -64,11 +64,11 @@ def us_catalog():
     for row in rows:
         code = (row.get("Symbol") or row.get("ACT Symbol") or "").strip().upper()
         name = (row.get("Security Name") or "").strip()
-        if not code or not name or row.get("Test Issue", "N") != "N" or row.get("ETF") == "Y":
+        if not code or not name or row.get("Test Issue", "N") != "N":
             continue
         normalized = code.replace("/", ".")
         instruments.append(base_instrument(
-            f"us-{normalized.lower()}", normalized, name, "US", "USD", "美国股票",
+            f"us-{normalized.lower()}", normalized, name, "US", "USD", "美国股票 / ETF" if row.get("ETF") == "Y" else "美国股票",
             "Nasdaq Trader 证券目录", ["美股"],
         ))
     if not instruments:
