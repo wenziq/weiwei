@@ -1,7 +1,8 @@
 import csv
 import math
 import re
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
+from email.utils import parsedate_to_datetime
 from io import StringIO
 from uuid import uuid4
 
@@ -59,15 +60,44 @@ def parse_number(value, label):
 def parse_date(value):
     text = str(value or "").strip().replace("年", "-").replace("月", "-").replace("日", "")
     text = re.sub(r"[/.]", "-", text)
+    text = re.sub(r"\s+", " ", text)
+    meridiem = re.search(r"\s*([AP])\.?M\.?$", text, re.IGNORECASE)
+    if meridiem:
+        clock = re.fullmatch(r"(?:.*?)(\d{1,2}):(\d{2})(?::(\d{2}))?", text[:meridiem.start()].strip())
+        if clock:
+            hour = int(clock[1])
+            if not 1 <= hour <= 12:
+                raise ValueError(f"使用 AM/PM 时，小时需要在 1–12 之间：{value}")
+            hour = hour % 12 + (12 if meridiem[1].upper() == "P" else 0)
+            text = f"{text[:clock.start(1)]}{hour:02d}:{clock[2]}:{clock[3] or '00'}"
     if re.fullmatch(r"\d{8}", text):
         text = f"{text[:4]}-{text[4:6]}-{text[6:]}"
     parts = re.fullmatch(r"(\d{4})-(\d{1,2})-(\d{1,2})(.*)", text)
     if parts:
         text = f"{parts[1]}-{int(parts[2]):02d}-{int(parts[3]):02d}{parts[4]}"
+    else:
+        parts = re.fullmatch(r"(\d{1,2})-(\d{1,2})-(\d{4}|\d{2})(.*)", text)
+        if parts:
+            first, second, year = int(parts[1]), int(parts[2]), int(parts[3])
+            year = 2000 + year if year < 100 else year
+            month, day = (second, first) if first > 12 and second <= 12 else (first, second)
+            text = f"{year}-{month:02d}-{day:02d}{parts[4]}"
+    if re.fullmatch(r"\d+(?:\.0+)?", text) and 20000 <= float(text) <= 80000:
+        return (datetime(1899, 12, 30) + timedelta(days=float(text))).isoformat()
     try:
         return datetime.fromisoformat(text).isoformat()
-    except ValueError as error:
-        raise ValueError(f"日期格式无法识别：{value}；可使用 2026-01-31 或 2026-01-31 14:30") from error
+    except ValueError:
+        pass
+    normalized = text.replace(",", " ")
+    for pattern in ["%d %b %Y", "%d %B %Y", "%b %d %Y", "%B %d %Y", "%Y %b %d", "%Y %B %d", "%Y%m%d%H%M", "%Y%m%d%H%M%S"]:
+        try:
+            return datetime.strptime(normalized, pattern).isoformat()
+        except ValueError:
+            continue
+    try:
+        return parsedate_to_datetime(text).isoformat()
+    except (TypeError, ValueError):
+        raise ValueError(f"日期格式无法识别：{value}；支持 2023-11-28、11/28/23、2023年11月28日等常见格式") from None
 
 
 class AccountService:
