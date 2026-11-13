@@ -71,7 +71,6 @@ export function AppShell() {
       <div className="sidebar-bottom">
         <button className="data-health" onClick={() => setPreferencesOpen(true)} title="行情与历史数据设置"><span className={`status-dot${health ? '' : healthError ? ' error' : ' muted'}`} /><span>{health ? '已连接' : healthError ? '未连接' : '连接中'}</span></button>
         <button className="nav-item subtle" onClick={() => setPreferencesOpen(true)}><Settings size={16} /><span>设置</span></button>
-        <div className="user-block"><div className="avatar">W</div><div><strong>Wenzi</strong><small>个人工作区</small></div></div>
       </div>
     </aside>
     <div className="workspace">
