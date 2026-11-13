@@ -76,9 +76,34 @@ pnpm dev
 
 ### 前后端分离部署
 
-在 **设置 → 连接与 AI** 中填写后端地址并测试连接，不需要重新打包。远程服务应使用 HTTPS，并通过 `WEIWEI_CORS_ORIGINS` 配置允许的前端来源。
+在 **设置 → 连接与 AI** 中填写后端地址并测试连接，不需要重新打包。公网服务必须使用 HTTPS；局域网可使用内网 IP 的 HTTP。通过 `WEIWEI_CORS_ORIGINS` 配置允许的前端来源。
 
 AI 密钥由系统钥匙串保管；独立部署的服务端也可以使用 `WEIWEI_AI_API_KEY` 环境变量。密钥不会写入研究 JSON、浏览器 localStorage 或项目日志。
+
+### Docker 与 Portainer
+
+项目提供 FastAPI 的 Dockerfile、Compose 配置和持久化目录。服务以非 root 用户运行，数据保存在项目根目录的 `data/`，该目录已被 Git 排除：
+
+```bash
+mkdir -p data
+sudo chown -R 10001:10001 data
+docker compose -f deploy/compose.yaml up -d --build
+```
+
+API 默认监听 `8000` 端口。已有本机数据可在服务停止后复制到 `data/`，再启动容器，不需要重新采集。
+
+需要图形化管理容器时，可在同一台内网服务器安装 Portainer CE：
+
+```bash
+docker volume create portainer_data
+docker run -d --name portainer --restart unless-stopped \
+  -p 9000:9000 \
+  -v /var/run/docker.sock:/var/run/docker.sock \
+  -v portainer_data:/data \
+  portainer/portainer-ce:latest
+```
+
+随后访问服务器的 `9000` 端口并创建 Portainer 管理员。不要把管理端口直接暴露到公网。
 
 ## 构建桌面安装包
 
@@ -97,7 +122,7 @@ DMG 不内嵌 FastAPI 服务；需要同时运行本机后端，或连接你部�
 - **沪深京财务**：东方财富真实报告与近一年已实施分红，展示对应报告期。
 - **行业与概念**：东方财富、同花顺、新浪真实分类与成分，后台分页采集并校验完整性。
 - **港股、美股财务筛选**：尚无可靠的批量财务源，相关缺失值不参与数值比较，不使用预设样本补齐。
-- **账户收益**：汇总收益、持仓成本与收益曲线仍为演示口径；账户配置和交易记录是真实持久化数据。
+- **账户收益**：按真实交易、现金流和历史行情计算移动平均成本、持仓与收益；没有记录时不使用演示资产或曲线。
 
 免费数据源可能延迟、限流或调整字段。请核对数据源的使用条款；本项目不代表已取得交易所实时行情授权、商业使用或再分发许可。
 
