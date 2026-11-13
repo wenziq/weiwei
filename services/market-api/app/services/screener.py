@@ -25,6 +25,8 @@ class ScreenerService:
         sectors = self.provider.sector_provider.sectors()
         sector = next((item for item in sectors if item["name"] == name), None)
         if not sector:
+            sector = next((item for item in sectors if item["name"].endswith(f"({name})")), None)
+        if not sector:
             raise ValueError(f"没有找到真实板块“{name}”，请从板块选项中选择")
         ids = self.provider.sector_provider.members(sector["id"])
         self.provider.store.save_sector_members(name, sorted(ids))
